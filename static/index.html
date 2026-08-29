@@ -18,11 +18,9 @@
 html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:var(--pg-50);color:var(--pg-text);}
 #app{height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
-/* ── SCREENS ── */
 .screen{display:none;flex-direction:column;flex:1;overflow:hidden;}
 .screen.active{display:flex;}
 
-/* ── NAV BAR ── */
 .navbar{background:var(--pg-100);border-bottom:1px solid var(--pg-border);padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:56px;flex-shrink:0;}
 .nav-brand{display:flex;align-items:center;gap:10px;}
 .nav-logo{width:32px;height:32px;background:var(--pg-400);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -31,14 +29,12 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
 .nav-sub{font-size:11px;color:var(--pg-muted);}
 .nav-actions{display:flex;gap:6px;align-items:center;}
 
-/* ── BOTTOM TAB BAR ── */
 .tab-bar{background:var(--pg-100);border-top:1px solid var(--pg-border);display:flex;padding:8px 0 max(8px,env(safe-area-inset-bottom));flex-shrink:0;}
 .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;transition:color 0.15s;color:var(--pg-muted);}
 .tab-item.active{color:var(--pg-500);}
 .tab-item i{font-size:20px;}
 .tab-item span{font-size:10px;font-weight:500;}
 
-/* ── BUTTONS ── */
 .btn{border:1px solid var(--pg-border);background:white;color:var(--pg-text);border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;transition:background 0.15s,border-color 0.15s;display:inline-flex;align-items:center;gap:5px;font-family:inherit;}
 .btn:hover{background:var(--pg-100);border-color:var(--pg-300);}
 .btn-primary{background:var(--pg-400);color:white;border-color:var(--pg-400);font-weight:500;}
@@ -49,27 +45,18 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
 .btn-danger{background:#fef2f2;border-color:#fca5a5;color:#dc2626;}
 .btn-danger:hover{background:#fee2e2;}
 
-/* ── CARDS ── */
-.card{background:white;border:1px solid var(--pg-border);border-radius:12px;padding:16px;box-shadow:var(--shadow);}
-.card-sm{padding:12px;}
-
-/* ── SECTION LABEL ── */
 .section-label{font-size:11px;font-weight:600;color:var(--pg-muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;}
-
-/* ── TAGS ── */
 .tag{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--pg-200);color:var(--pg-700);font-weight:500;display:inline-block;}
 .tag-buddy{background:#dbeafe;color:#1e40af;}
 .tag-strict{background:#fee2e2;color:#991b1b;}
 .tag-weak{background:#fef3c7;color:#92400e;}
 .tag-practice{background:#ede9fe;color:#5b21b6;}
 
-/* ── FORM ── */
 .form-group{margin-bottom:12px;}
 .form-label{font-size:12px;font-weight:500;color:var(--pg-muted);margin-bottom:4px;display:block;}
 .form-input{border:1px solid var(--pg-border);border-radius:8px;padding:8px 11px;font-size:13px;font-family:inherit;background:var(--pg-50);color:var(--pg-text);width:100%;outline:none;transition:border-color 0.15s;}
 .form-input:focus{border-color:var(--pg-400);}
 
-/* ── MODAL ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;}
 .modal-overlay.open{display:flex;}
 .modal{background:white;border-radius:16px;border:1px solid var(--pg-border);padding:24px;width:100%;max-width:380px;max-height:90vh;overflow-y:auto;}
@@ -77,13 +64,10 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
 .modal-desc{font-size:13px;color:var(--pg-muted);margin-bottom:16px;line-height:1.5;}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
 
-/* ── PROGRESS BAR ── */
 .prog-wrap{background:var(--pg-200);border-radius:99px;height:6px;overflow:hidden;}
 .prog-fill{background:var(--pg-400);height:100%;border-radius:99px;transition:width 0.4s;}
 
-/* ══════════════════════════════════════
-   HOME TAB
-══════════════════════════════════════ */
+/* ── HOME ── */
 .home-body{flex:1;overflow-y:auto;padding:16px;}
 .welcome-card{background:linear-gradient(135deg,var(--pg-200),var(--pg-100));border:1px solid var(--pg-border);border-radius:14px;padding:18px;margin-bottom:16px;}
 .welcome-card h2{font-size:17px;font-weight:600;margin-bottom:3px;}
@@ -105,29 +89,49 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
 .mode-card i{font-size:22px;color:var(--pg-400);display:block;margin-bottom:5px;}
 .mode-title{font-size:13px;font-weight:500;margin-bottom:2px;}
 .mode-desc{font-size:11px;color:var(--pg-muted);line-height:1.4;}
-
-/* upload zone */
-.upload-zone{background:white;border:2px dashed var(--pg-300);border-radius:12px;padding:18px;text-align:center;cursor:pointer;transition:all 0.15s;margin-bottom:16px;}
-.upload-zone:hover{background:var(--pg-accent);border-color:var(--pg-400);}
-.upload-zone.drag-over{background:var(--pg-accent);border-color:var(--pg-500);}
-.upload-zone i{font-size:28px;color:var(--pg-300);display:block;margin-bottom:6px;}
-.upload-zone p{font-size:13px;color:var(--pg-muted);}
-.upload-zone strong{color:var(--pg-500);}
-.uploaded-exam{background:var(--pg-accent);border:1px solid var(--pg-border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-.uploaded-exam i{color:var(--pg-400);font-size:18px;}
-.uploaded-exam-name{font-size:13px;font-weight:500;flex:1;}
-.uploaded-exam-sub{font-size:11px;color:var(--pg-muted);}
-
-/* plan */
 .plan-card{background:white;border:1px solid var(--pg-border);border-radius:10px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow);}
 .plan-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
 .plan-day{font-size:13px;font-weight:500;}
 .plan-focus{font-size:11px;color:var(--pg-muted);margin-top:2px;}
 .plan-dur{font-size:11px;color:var(--pg-500);font-weight:600;background:var(--pg-100);padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
 
-/* ══════════════════════════════════════
-   STUDY TAB
-══════════════════════════════════════ */
+/* ── UPLOAD ── */
+.upload-zone{background:white;border:2px dashed var(--pg-300);border-radius:12px;padding:18px;text-align:center;cursor:pointer;transition:all 0.15s;margin-bottom:16px;}
+.upload-zone:hover{background:var(--pg-accent);border-color:var(--pg-400);}
+.upload-zone.drag-over{background:var(--pg-accent);border-color:var(--pg-500);}
+.upload-zone i{font-size:28px;color:var(--pg-300);display:block;margin-bottom:6px;}
+.upload-zone p{font-size:13px;color:var(--pg-muted);}
+.upload-zone strong{color:var(--pg-500);}
+.uploaded-exam-row{background:var(--pg-accent);border:1px solid var(--pg-border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.uploaded-exam-row i{color:var(--pg-400);font-size:18px;flex-shrink:0;}
+.uploaded-exam-name{font-size:13px;font-weight:500;flex:1;}
+.uploaded-exam-sub{font-size:11px;color:var(--pg-muted);}
+
+/* ── COURSE HISTORY SCREEN ── */
+.course-history-body{flex:1;overflow-y:auto;padding:16px;}
+.course-tabs{display:flex;gap:0;border-bottom:1px solid var(--pg-border);margin-bottom:16px;flex-shrink:0;}
+.course-tab{flex:1;padding:10px;text-align:center;font-size:12px;font-weight:500;color:var(--pg-muted);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
+.course-tab.active{color:var(--pg-500);border-bottom-color:var(--pg-400);}
+.course-tab-panel{display:none;}
+.course-tab-panel.active{display:block;}
+
+/* exam library */
+.exam-library-item{background:white;border:1px solid var(--pg-border);border-radius:10px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow);}
+.exam-library-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.exam-library-name{font-size:13px;font-weight:500;}
+.exam-library-meta{font-size:11px;color:var(--pg-muted);}
+.exam-library-actions{display:flex;gap:6px;margin-top:8px;}
+
+/* practice problems history */
+.problem-card{background:white;border:1px solid var(--pg-border);border-radius:10px;padding:13px 14px;margin-bottom:10px;box-shadow:var(--shadow);}
+.problem-card.weak{border-left:3px solid var(--amber);}
+.problem-question{font-size:13px;font-weight:500;margin-bottom:8px;line-height:1.5;}
+.problem-answer{font-size:12px;color:var(--pg-muted);background:var(--pg-50);border-radius:6px;padding:8px 10px;margin-bottom:6px;line-height:1.5;}
+.problem-feedback{font-size:12px;color:var(--pg-text);background:var(--pg-accent);border-radius:6px;padding:8px 10px;line-height:1.5;}
+.problem-meta{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.problem-date{font-size:10px;color:var(--pg-muted);}
+
+/* ── STUDY SCREEN ── */
 .study-meta{background:var(--pg-100);border-bottom:1px solid var(--pg-border);padding:9px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .chat-area{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
 .bubble-wrap{display:flex;flex-direction:column;gap:3px;}
@@ -152,21 +156,12 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
 .send-btn:hover{background:var(--pg-500);}
 .send-btn:disabled{background:var(--pg-200);cursor:not-allowed;}
 
-/* typing */
 .typing-dot{width:7px;height:7px;border-radius:50%;background:var(--pg-300);animation:blink 1.2s infinite;}
 .typing-dot:nth-child(2){animation-delay:.2s;}
 .typing-dot:nth-child(3){animation-delay:.4s;}
 @keyframes blink{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
 
-/* session end card */
-.session-summary{background:var(--pg-100);border:1px solid var(--pg-border);border-radius:12px;padding:14px 16px;max-width:82%;}
-.session-summary h4{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--pg-600);}
-.summary-row{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--pg-text);margin-bottom:4px;}
-.summary-row i{color:var(--pg-400);font-size:14px;}
-
-/* ══════════════════════════════════════
-   HISTORY TAB
-══════════════════════════════════════ */
+/* ── HISTORY TAB ── */
 .history-body{flex:1;overflow-y:auto;padding:16px;}
 .history-empty{text-align:center;padding:60px 20px;color:var(--pg-muted);}
 .history-empty i{font-size:48px;color:var(--pg-200);display:block;margin-bottom:12px;}
@@ -175,12 +170,10 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
 .session-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
 .session-card-course{font-size:13px;font-weight:600;}
 .session-card-date{font-size:11px;color:var(--pg-muted);}
-.session-card-meta{display:flex;gap:8px;flex-wrap:wrap;}
+.session-card-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
 .session-card-stat{font-size:11px;color:var(--pg-muted);display:flex;align-items:center;gap:3px;}
 
-/* ══════════════════════════════════════
-   WEAK SPOTS TAB
-══════════════════════════════════════ */
+/* ── WEAK SPOTS TAB ── */
 .weakspots-body{flex:1;overflow-y:auto;padding:16px;}
 .ws-course-section{margin-bottom:20px;}
 .ws-course-title{font-size:14px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
@@ -193,11 +186,8 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
 .ws-bar.low{background:var(--pg-400);}
 .ws-num{font-size:11px;color:var(--pg-muted);width:20px;text-align:right;}
 
-/* ══════════════════════════════════════
-   SETTINGS TAB
-══════════════════════════════════════ */
+/* ── SETTINGS TAB ── */
 .settings-body{flex:1;overflow-y:auto;padding:16px;}
-.settings-section{margin-bottom:20px;}
 .settings-row{background:white;border:1px solid var(--pg-border);border-radius:10px;padding:14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);}
 .settings-row-left{display:flex;flex-direction:column;gap:2px;}
 .settings-label{font-size:13px;font-weight:500;}
@@ -222,7 +212,7 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
       <div class="nav-logo"><i class="ti ti-plant-2"></i></div>
       <div>
         <div class="nav-title">StudyBuddy</div>
-        <div class="nav-sub" id="homeSubtitle">Hi Ashley 👋</div>
+        <div class="nav-sub">Hi Ashley 👋</div>
       </div>
     </div>
     <div class="nav-actions">
@@ -231,13 +221,11 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
   </div>
 
   <div class="home-body">
-    <!-- welcome -->
     <div class="welcome-card">
-      <h2 id="welcomeHeading">Fall 2026</h2>
-      <p id="welcomeSub">Pick a course and a mode below to start studying.</p>
+      <h2>Fall 2026</h2>
+      <p>Pick a course to study or view its history. Your progress is tracked automatically.</p>
     </div>
 
-    <!-- stats -->
     <div class="section-label">Your progress</div>
     <div class="stats-row">
       <div class="stat-card"><div class="stat-num" id="statSessions">0</div><div class="stat-lbl">Sessions</div></div>
@@ -245,74 +233,35 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
       <div class="stat-card"><div class="stat-num" id="statStreak">0</div><div class="stat-lbl">🔥 Streak</div></div>
     </div>
 
-    <!-- courses -->
     <div class="section-label">Select a course</div>
     <div class="course-grid">
-      <div class="course-card" data-course="CS 320" onclick="selectCourse(this)">
+      <div class="course-card" data-course="CS 320" onclick="openCourseHistory('CS 320')">
         <div class="course-code">CS 320</div>
         <div class="course-name">Data Science Programming II</div>
         <div class="course-badge">Python · graphs · ML</div>
       </div>
-      <div class="course-card" data-course="CS 252" onclick="selectCourse(this)">
+      <div class="course-card" data-course="CS 252" onclick="openCourseHistory('CS 252')">
         <div class="course-code">CS 252</div>
         <div class="course-name">Intro to Computer Engineering</div>
         <div class="course-badge">Boolean · assembly</div>
       </div>
-      <div class="course-card" data-course="CS 240" onclick="selectCourse(this)">
+      <div class="course-card" data-course="CS 240" onclick="openCourseHistory('CS 240')">
         <div class="course-code">CS 240</div>
         <div class="course-name">Discrete Mathematics</div>
         <div class="course-badge">proofs · graphs · counting</div>
       </div>
-      <div class="course-card" data-course="STAT 311" onclick="selectCourse(this)">
+      <div class="course-card" data-course="STAT 311" onclick="openCourseHistory('STAT 311')">
         <div class="course-code">STAT 311</div>
         <div class="course-name">Mathematical Statistics I</div>
         <div class="course-badge">probability · estimation</div>
       </div>
-      <div class="course-card" data-course="KINES 100" onclick="selectCourse(this)">
+      <div class="course-card" data-course="KINES 100" onclick="openCourseHistory('KINES 100')">
         <div class="course-code">KINES 100</div>
         <div class="course-name">Exercise, Nutrition & Health</div>
         <div class="course-badge">fitness · nutrition</div>
       </div>
     </div>
 
-    <!-- modes -->
-    <div class="section-label">Choose a mode</div>
-    <div class="mode-grid">
-      <div class="mode-card" onclick="startStudy('buddy')">
-        <i class="ti ti-mood-smile"></i>
-        <div class="mode-title">Study buddy</div>
-        <div class="mode-desc">Hints, encouragement, relaxed pace</div>
-      </div>
-      <div class="mode-card" onclick="startStudy('strict')">
-        <i class="ti ti-clipboard-check"></i>
-        <div class="mode-title">Exam mode</div>
-        <div class="mode-desc">Strict, no hints — use near exam day</div>
-      </div>
-      <div class="mode-card" onclick="startStudy('weakspots')">
-        <i class="ti ti-target"></i>
-        <div class="mode-title">Weak spot focus</div>
-        <div class="mode-desc">Only topics you've struggled with</div>
-      </div>
-      <div class="mode-card" onclick="startStudy('practice')">
-        <i class="ti ti-file-text"></i>
-        <div class="mode-title">Practice exam</div>
-        <div class="mode-desc">Generates professor-style questions</div>
-      </div>
-    </div>
-
-    <!-- PDF upload -->
-    <div class="section-label">Upload practice exam (PDF or text)</div>
-    <div class="upload-zone" id="uploadZone"
-         onclick="document.getElementById('pdfInput').click()"
-         ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-      <i class="ti ti-cloud-upload"></i>
-      <p>Drag & drop a PDF, or <strong>click to browse</strong></p>
-      <p style="font-size:11px;margin-top:4px;">I'll generate professor-style questions based on it</p>
-    </div>
-    <input type="file" id="pdfInput" accept=".pdf,.txt" style="display:none" onchange="handleFileSelect(event)">
-    <div id="uploadedExams"></div>
-
-    <!-- study plan -->
     <div class="section-label">Study plan</div>
     <div id="studyPlanContainer">
       <div class="plan-card">
@@ -332,6 +281,90 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
     <div class="tab-item" onclick="showTab('history')"><i class="ti ti-history"></i><span>History</span></div>
     <div class="tab-item" onclick="showTab('weakspots')"><i class="ti ti-target"></i><span>Weak Spots</span></div>
     <div class="tab-item" onclick="showTab('settings')"><i class="ti ti-settings"></i><span>Settings</span></div>
+  </div>
+</div>
+
+<!-- ══ COURSE HISTORY SCREEN ══ -->
+<div id="courseHistoryScreen" class="screen">
+  <div class="navbar">
+    <div class="nav-brand">
+      <button class="btn btn-ghost btn-sm" onclick="showScreen('homeScreen')"><i class="ti ti-arrow-left"></i></button>
+      <div>
+        <div class="nav-title" id="courseHistoryTitle">CS 320</div>
+        <div class="nav-sub" id="courseHistorySub">Data Science Programming II</div>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="startStudyFromCourse()"><i class="ti ti-bolt"></i> Study now</button>
+  </div>
+
+  <!-- course tabs -->
+  <div class="course-tabs" style="padding:0 16px;background:white;flex-shrink:0;">
+    <div class="course-tab active" onclick="switchCourseTab('study')">Study</div>
+    <div class="course-tab" onclick="switchCourseTab('exams')">Practice Exams</div>
+    <div class="course-tab" onclick="switchCourseTab('problems')">Problem History</div>
+  </div>
+
+  <div class="course-history-body">
+
+    <!-- STUDY TAB -->
+    <div class="course-tab-panel active" id="tabStudy">
+      <div class="section-label">Choose a mode</div>
+      <div class="mode-grid">
+        <div class="mode-card" onclick="startStudyFromCourse('buddy')">
+          <i class="ti ti-mood-smile"></i>
+          <div class="mode-title">Study buddy</div>
+          <div class="mode-desc">Hints, encouragement, relaxed pace</div>
+        </div>
+        <div class="mode-card" onclick="startStudyFromCourse('strict')">
+          <i class="ti ti-clipboard-check"></i>
+          <div class="mode-title">Exam mode</div>
+          <div class="mode-desc">Strict, no hints — use near exam day</div>
+        </div>
+        <div class="mode-card" onclick="startStudyFromCourse('weakspots')">
+          <i class="ti ti-target"></i>
+          <div class="mode-title">Weak spot focus</div>
+          <div class="mode-desc">Only topics you've struggled with</div>
+        </div>
+        <div class="mode-card" onclick="startStudyFromCourse('practice')">
+          <i class="ti ti-file-text"></i>
+          <div class="mode-title">Practice exam</div>
+          <div class="mode-desc">Generates professor-style questions</div>
+        </div>
+      </div>
+
+      <div class="section-label">Weak spots for this course</div>
+      <div id="courseWeakSpotsList">
+        <p style="font-size:13px;color:var(--pg-muted);">No weak spots identified yet for this course.</p>
+      </div>
+    </div>
+
+    <!-- PRACTICE EXAMS TAB -->
+    <div class="course-tab-panel" id="tabExams">
+      <div class="section-label">Uploaded practice exams</div>
+      <div class="upload-zone" id="courseUploadZone"
+           onclick="document.getElementById('courseFileInput').click()"
+           ondragover="handleDragOver2(event)" ondragleave="handleDragLeave2(event)" ondrop="handleDrop2(event)">
+        <i class="ti ti-cloud-upload"></i>
+        <p>Drag & drop a PDF, or <strong>click to browse</strong></p>
+        <p style="font-size:11px;margin-top:4px;">I'll generate professor-style questions based on it</p>
+      </div>
+      <input type="file" id="courseFileInput" accept=".pdf,.txt" style="display:none" onchange="handleCourseFileSelect(event)">
+      <div id="examLibrary">
+        <p style="font-size:13px;color:var(--pg-muted);">No practice exams uploaded for this course yet.</p>
+      </div>
+    </div>
+
+    <!-- PROBLEM HISTORY TAB -->
+    <div class="course-tab-panel" id="tabProblems">
+      <div class="section-label">Past practice problems</div>
+      <div id="problemHistory">
+        <div class="history-empty" style="padding:40px 20px;">
+          <i class="ti ti-notes" style="font-size:40px;color:var(--pg-200);display:block;margin-bottom:10px;"></i>
+          <p style="font-size:13px;">No problems yet — start a study session to see your history here!</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -386,7 +419,7 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
   <div class="navbar">
     <div class="nav-brand">
       <div class="nav-logo"><i class="ti ti-history"></i></div>
-      <div><div class="nav-title">Session History</div><div class="nav-sub">Your past study sessions</div></div>
+      <div><div class="nav-title">Session History</div><div class="nav-sub">All past study sessions</div></div>
     </div>
   </div>
   <div class="history-body" id="historyBody">
@@ -410,9 +443,6 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
       <div class="nav-logo" style="background:var(--amber);"><i class="ti ti-target"></i></div>
       <div><div class="nav-title">Weak Spots</div><div class="nav-sub">Topics that need more work</div></div>
     </div>
-    <button class="btn btn-sm" onclick="startStudy('weakspots');showScreen('studyScreen');">
-      <i class="ti ti-bolt"></i> Practice now
-    </button>
   </div>
   <div class="weakspots-body" id="weakspotsBody">
     <div class="history-empty">
@@ -437,8 +467,8 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
     </div>
   </div>
   <div class="settings-body">
-    <div class="profile-avatar" id="profileAvatar">A</div>
-    <p style="text-align:center;font-size:15px;font-weight:600;margin-bottom:4px;" id="profileName">Ashley</p>
+    <div class="profile-avatar">A</div>
+    <p style="text-align:center;font-size:15px;font-weight:600;margin-bottom:4px;">Ashley</p>
     <p style="text-align:center;font-size:12px;color:var(--pg-muted);margin-bottom:20px;">UW–Madison · Data Science · Class of 2029</p>
 
     <div class="section-label">Preferences</div>
@@ -449,7 +479,7 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
       </div>
       <div style="display:flex;align-items:center;gap:6px;">
         <button class="btn btn-sm btn-ghost" onclick="adjustQCount(-1)"><i class="ti ti-minus"></i></button>
-        <span id="qCountDisplay" style="font-size:15px;font-weight:600;color:var(--pg-500);width:20px;text-align:center;">5</span>
+        <span id="qCountDisplay" style="font-size:15px;font-weight:600;color:var(--pg-500);width:24px;text-align:center;">5</span>
         <button class="btn btn-sm btn-ghost" onclick="adjustQCount(1)"><i class="ti ti-plus"></i></button>
       </div>
     </div>
@@ -489,7 +519,7 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
       <i class="ti ti-trash" style="color:var(--red);font-size:18px;"></i>
     </div>
 
-    <p style="font-size:11px;color:var(--pg-muted);text-align:center;margin-top:20px;">StudyBuddy v1.0 · Built by Ashley Lin · UW–Madison 2029</p>
+    <p style="font-size:11px;color:var(--pg-muted);text-align:center;margin-top:20px;">StudyBuddy v1.1 · Built by Ashley Lin · UW–Madison 2029</p>
   </div>
   <div class="tab-bar">
     <div class="tab-item" onclick="showTab('home')"><i class="ti ti-home"></i><span>Home</span></div>
@@ -543,9 +573,6 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
 </div>
 
 <script>
-// ════════════════════════════════════════════
-// STATE
-// ════════════════════════════════════════════
 const USER_ID = "ashley";
 const API_BASE = "";
 
@@ -566,19 +593,22 @@ let state = {
   isLoading: false,
   awaitingAnswer: false,
   currentQuestion: "",
+  currentAnswer: "",
+  currentFeedback: "",
   recentTopics: [],
   uploadedExamText: "",
   uploadedExamName: "",
+  uploadedExamId: null,
   sessions: [],
+  practiceProblems: [],
+  uploadedExams: {},
   progress: { sessionsCount:0, questionsAnswered:0, streak:0, lastStudied:null },
   allWeakSpots: {},
   exams: [],
   settings: { autoStrict:true, showWeakPanel:true, adaptive:true, qCount:5 }
 };
 
-// ════════════════════════════════════════════
-// SCREEN NAVIGATION
-// ════════════════════════════════════════════
+// ── SCREEN NAV ─────────────────────────────────────────────────────────────
 function showScreen(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
@@ -592,14 +622,198 @@ function showTab(tab) {
   if (tab === "settings") renderSettings();
 }
 
-// ════════════════════════════════════════════
-// PERSISTENCE (localStorage as Supabase fallback)
-// ════════════════════════════════════════════
+// ── COURSE HISTORY SCREEN ──────────────────────────────────────────────────
+function openCourseHistory(course) {
+  state.selectedCourse = course;
+  document.getElementById("courseHistoryTitle").textContent = course;
+  document.getElementById("courseHistorySub").textContent = COURSES[course]?.full || "";
+  switchCourseTab("study");
+  renderCourseWeakSpots(course);
+  renderExamLibrary(course);
+  renderProblemHistory(course);
+  showScreen("courseHistoryScreen");
+}
+
+function switchCourseTab(tab) {
+  document.querySelectorAll(".course-tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".course-tab-panel").forEach(p => p.classList.remove("active"));
+  const tabMap = { study:0, exams:1, problems:2 };
+  document.querySelectorAll(".course-tab")[tabMap[tab]].classList.add("active");
+  document.getElementById(tab === "study" ? "tabStudy" : tab === "exams" ? "tabExams" : "tabProblems").classList.add("active");
+}
+
+function renderCourseWeakSpots(course) {
+  const ws = state.allWeakSpots[course] || {};
+  const el = document.getElementById("courseWeakSpotsList");
+  const entries = Object.entries(ws).sort((a,b) => b[1]-a[1]);
+  if (entries.length === 0) {
+    el.innerHTML = `<p style="font-size:13px;color:var(--pg-muted);">No weak spots identified yet for this course.</p>`;
+    return;
+  }
+  const max = entries[0][1];
+  el.innerHTML = entries.map(([topic, count]) => {
+    const pct = Math.round((count/max)*100);
+    const cls = pct > 70 ? "high" : pct > 40 ? "" : "low";
+    return `<div class="ws-item">
+      <div class="ws-topic">${topic}</div>
+      <div class="ws-count">
+        <div class="ws-bar-wrap"><div class="ws-bar ${cls}" style="width:${pct}%"></div></div>
+        <div class="ws-num">${count}×</div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function renderExamLibrary(course) {
+  const el = document.getElementById("examLibrary");
+  const exams = state.uploadedExams[course] || [];
+  if (exams.length === 0) {
+    el.innerHTML = `<p style="font-size:13px;color:var(--pg-muted);">No practice exams uploaded for this course yet.</p>`;
+    return;
+  }
+  el.innerHTML = exams.map((exam, i) => {
+    const date = new Date(exam.date).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
+    return `<div class="exam-library-item">
+      <div class="exam-library-top">
+        <div class="exam-library-name"><i class="ti ti-file-text" style="color:var(--pg-400);margin-right:5px;"></i>${exam.name}</div>
+      </div>
+      <div class="exam-library-meta">${exam.pages ? exam.pages + " pages · " : ""}Uploaded ${date}</div>
+      <div class="exam-library-actions">
+        <button class="btn btn-sm btn-primary" onclick="studyFromExam(${i})"><i class="ti ti-bolt"></i> Study from this</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteUploadedExam(${i})"><i class="ti ti-trash"></i> Remove</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function renderProblemHistory(course) {
+  const el = document.getElementById("problemHistory");
+  const problems = state.practiceProblems.filter(p => p.course === course);
+  if (problems.length === 0) {
+    el.innerHTML = `<div class="history-empty" style="padding:40px 20px;">
+      <i class="ti ti-notes" style="font-size:40px;color:var(--pg-200);display:block;margin-bottom:10px;"></i>
+      <p style="font-size:13px;">No problems yet — start a study session to see your history here!</p>
+    </div>`;
+    return;
+  }
+  el.innerHTML = [...problems].reverse().map(p => {
+    const date = new Date(p.date).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+    const time = new Date(p.date).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
+    const modeLabel = { buddy:"Study buddy", strict:"Exam mode", weakspots:"Weak spot focus", practice:"Practice exam" }[p.mode] || p.mode;
+    return `<div class="problem-card ${p.weakSpot ? "weak" : ""}">
+      <div class="problem-question">${p.question.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")}</div>
+      ${p.answer ? `<div class="problem-answer"><strong style="font-size:10px;color:var(--pg-500);text-transform:uppercase;letter-spacing:0.5px;">Your answer</strong><br>${p.answer}</div>` : ""}
+      ${p.feedback ? `<div class="problem-feedback"><strong style="font-size:10px;color:var(--pg-600);text-transform:uppercase;letter-spacing:0.5px;">Feedback</strong><br>${p.feedback.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")}</div>` : ""}
+      <div class="problem-meta">
+        <span class="problem-date">${date} · ${time}</span>
+        <span class="tag" style="font-size:10px;">${modeLabel}</span>
+        ${p.weakSpot ? `<span class="weak-chip" style="font-size:10px;">⚠️ Weak spot</span>` : ""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function studyFromExam(index) {
+  const exam = (state.uploadedExams[state.selectedCourse] || [])[index];
+  if (!exam) return;
+  state.uploadedExamText = exam.text || "";
+  state.uploadedExamName = exam.name;
+  startStudy("practice");
+}
+
+function deleteUploadedExam(index) {
+  if (!state.uploadedExams[state.selectedCourse]) return;
+  const exam = state.uploadedExams[state.selectedCourse][index];
+  state.uploadedExams[state.selectedCourse].splice(index, 1);
+  saveLocal();
+  renderExamLibrary(state.selectedCourse);
+  // Also delete from Supabase if it has an ID
+  if (exam?.id) {
+    fetch(`${API_BASE}/api/uploaded-exams/${exam.id}`, { method:"DELETE" }).catch(()=>{});
+  }
+}
+
+function startStudyFromCourse(mode) {
+  mode = mode || "buddy";
+  startStudy(mode);
+}
+
+// ── COURSE FILE UPLOAD ─────────────────────────────────────────────────────
+function handleDragOver2(e) { e.preventDefault(); document.getElementById("courseUploadZone").classList.add("drag-over"); }
+function handleDragLeave2(e) { document.getElementById("courseUploadZone").classList.remove("drag-over"); }
+function handleDrop2(e) {
+  e.preventDefault();
+  document.getElementById("courseUploadZone").classList.remove("drag-over");
+  const file = e.dataTransfer.files[0];
+  if (file) processCourseFile(file);
+}
+function handleCourseFileSelect(e) { const file = e.target.files[0]; if (file) processCourseFile(file); }
+
+function processCourseFile(file) {
+  const course = state.selectedCourse;
+  if (!state.uploadedExams[course]) state.uploadedExams[course] = [];
+
+  if (file.type === "text/plain") {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const entry = { name:file.name, text:e.target.result, pages:null, date:new Date().toISOString(), course };
+      state.uploadedExams[course].push(entry);
+      saveLocal();
+      renderExamLibrary(course);
+      uploadExamToSupabase(file, course, e.target.result, null);
+    };
+    reader.readAsText(file);
+  } else {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("user_id", USER_ID);
+    formData.append("course", course);
+    fetch(`${API_BASE}/api/upload-exam`, { method:"POST", body:formData })
+      .then(r => r.json())
+      .then(d => {
+        const entry = { name:file.name, text:d.text||"", pages:d.pages||null, date:new Date().toISOString(), course, id:d.id||null };
+        state.uploadedExams[course].push(entry);
+        saveLocal();
+        renderExamLibrary(course);
+      })
+      .catch(() => {
+        const entry = { name:file.name, text:"", pages:null, date:new Date().toISOString(), course };
+        state.uploadedExams[course].push(entry);
+        saveLocal();
+        renderExamLibrary(course);
+      });
+  }
+}
+
+async function uploadExamToSupabase(file, course, text, pages) {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("user_id", USER_ID);
+    formData.append("course", course);
+    const r = await fetch(`${API_BASE}/api/upload-exam`, { method:"POST", body:formData });
+    const d = await r.json();
+    if (d.id) {
+      const idx = (state.uploadedExams[course]||[]).findIndex(e => e.name === file.name && !e.id);
+      if (idx >= 0) state.uploadedExams[course][idx].id = d.id;
+      saveLocal();
+    }
+  } catch(e) {}
+}
+
+// ── PERSISTENCE ────────────────────────────────────────────────────────────
 function saveLocal() {
-  try { localStorage.setItem("sb_state", JSON.stringify({
-    progress: state.progress, sessions: state.sessions.slice(-50),
-    allWeakSpots: state.allWeakSpots, exams: state.exams, settings: state.settings
-  })); } catch(e) {}
+  try {
+    localStorage.setItem("sb_state", JSON.stringify({
+      progress: state.progress,
+      sessions: state.sessions.slice(-50),
+      practiceProblems: state.practiceProblems.slice(-200),
+      allWeakSpots: state.allWeakSpots,
+      exams: state.exams,
+      uploadedExams: state.uploadedExams,
+      settings: state.settings
+    }));
+  } catch(e) {}
 }
 
 function loadLocal() {
@@ -607,8 +821,10 @@ function loadLocal() {
     const d = JSON.parse(localStorage.getItem("sb_state") || "{}");
     if (d.progress) state.progress = d.progress;
     if (d.sessions) state.sessions = d.sessions;
+    if (d.practiceProblems) state.practiceProblems = d.practiceProblems;
     if (d.allWeakSpots) state.allWeakSpots = d.allWeakSpots;
     if (d.exams) state.exams = d.exams;
+    if (d.uploadedExams) state.uploadedExams = d.uploadedExams;
     if (d.settings) state.settings = { ...state.settings, ...d.settings };
   } catch(e) {}
 }
@@ -634,9 +850,7 @@ async function loadFromSupabase() {
   } catch(e) {}
 }
 
-// ════════════════════════════════════════════
-// STREAK LOGIC
-// ════════════════════════════════════════════
+// ── STREAK ─────────────────────────────────────────────────────────────────
 function updateStreak() {
   const today = new Date().toDateString();
   const last = state.progress.lastStudied;
@@ -646,9 +860,7 @@ function updateStreak() {
   state.progress.lastStudied = today;
 }
 
-// ════════════════════════════════════════════
-// UI UPDATERS
-// ════════════════════════════════════════════
+// ── STATS ──────────────────────────────────────────────────────────────────
 function refreshStats() {
   document.getElementById("statSessions").textContent = state.progress.sessionsCount;
   document.getElementById("statQuestions").textContent = state.progress.questionsAnswered;
@@ -661,19 +873,10 @@ function updateProgressBar() {
   document.getElementById("progressLabel").textContent = state.questionCount + " / " + state.totalQuestions;
 }
 
-// ════════════════════════════════════════════
-// COURSE + MODE SELECTION
-// ════════════════════════════════════════════
-function selectCourse(el) {
-  document.querySelectorAll(".course-card").forEach(c => c.classList.remove("selected"));
-  el.classList.add("selected");
-  state.selectedCourse = el.dataset.course;
-}
-
+// ── START STUDY ────────────────────────────────────────────────────────────
 function startStudy(mode) {
   if (!state.selectedCourse) {
     state.selectedCourse = "CS 320";
-    document.querySelector('[data-course="CS 320"]').classList.add("selected");
   }
   state.currentMode = mode;
   state.questionCount = 0;
@@ -682,8 +885,9 @@ function startStudy(mode) {
   state.recentTopics = [];
   state.awaitingAnswer = false;
   state.isLoading = false;
+  state.currentAnswer = "";
+  state.currentFeedback = "";
 
-  // Auto-escalate to strict if exam is within 3 days
   if (state.settings.autoStrict && mode === "buddy") {
     const upcoming = state.exams.find(e => e.course === state.selectedCourse);
     if (upcoming) {
@@ -692,7 +896,6 @@ function startStudy(mode) {
     }
   }
 
-  // Setup header
   document.getElementById("studyCourseLabel").textContent = state.selectedCourse;
   const labels = { buddy:"Study buddy mode", strict:"Exam mode", weakspots:"Weak spot focus", practice:"Practice exam mode" };
   document.getElementById("studyModeLabel").textContent = labels[mode] || "Study mode";
@@ -707,16 +910,15 @@ function startStudy(mode) {
   document.getElementById("weakPanel").style.display = "none";
   document.getElementById("weakChips").innerHTML = "";
   updateProgressBar();
-
   showScreen("studyScreen");
 
   const greetings = {
-    buddy: `Hey Ashley! Let's dig into **${state.selectedCourse}** 🌿\n\nI'll ask open-ended questions — no guessing! Use **Hint** if you're stuck, or **实在不知道** for a full step-by-step explanation. You can also ask me follow-up questions at any point.\n\nReady? Here's your first question:`,
+    buddy: `Hey Ashley! Let's dig into **${state.selectedCourse}** 🌿\n\nI'll ask open-ended questions — no guessing! Use **Hint** if you're stuck, or **实在不知道** for a full step-by-step explanation.\n\nReady? Here's your first question:`,
     strict: `Exam mode activated for **${state.selectedCourse}**. No hints. Answer as you would on the real exam. Let's go 💪`,
-    weakspots: `Let's target your weak spots in **${state.selectedCourse}**. I'll focus on the concepts that have tripped you up before — turning weaknesses into strengths 🎯`,
+    weakspots: `Let's target your weak spots in **${state.selectedCourse}**. Turning weaknesses into strengths 🎯`,
     practice: state.uploadedExamText
-      ? `Practice exam mode for **${state.selectedCourse}**. I'll generate questions based on your uploaded exam 📄`
-      : `Practice exam mode for **${state.selectedCourse}**. I'll generate professor-style questions. You can also upload a practice exam PDF on the home screen for more targeted questions 📄`
+      ? `Practice exam mode for **${state.selectedCourse}**. Generating questions based on your uploaded exam 📄`
+      : `Practice exam mode for **${state.selectedCourse}**. I'll generate professor-style questions 📄`
   };
 
   addAIBubble(greetings[mode] || greetings.buddy);
@@ -724,7 +926,6 @@ function startStudy(mode) {
 }
 
 function endSession() {
-  // Save session record
   if (state.questionCount > 0) {
     state.sessions.push({
       id: Date.now(),
@@ -739,9 +940,7 @@ function endSession() {
   showScreen("homeScreen");
 }
 
-// ════════════════════════════════════════════
-// CHAT BUBBLES
-// ════════════════════════════════════════════
+// ── BUBBLES ────────────────────────────────────────────────────────────────
 function addBubble(text, role) {
   const area = document.getElementById("chatArea");
   const wrap = document.createElement("div");
@@ -769,9 +968,7 @@ function showTyping() {
 }
 function removeTyping() { const el=document.getElementById("typingWrap"); if(el) el.remove(); }
 
-// ════════════════════════════════════════════
-// ADAPTIVE TOPIC SELECTION
-// ════════════════════════════════════════════
+// ── ADAPTIVE TOPIC ─────────────────────────────────────────────────────────
 function pickTopic() {
   const course = COURSES[state.selectedCourse];
   if (!course) return "general concepts";
@@ -780,12 +977,8 @@ function pickTopic() {
   if (state.currentMode === "weakspots" && state.settings.adaptive) {
     const ws = state.allWeakSpots[state.selectedCourse] || {};
     const weakTopics = Object.entries(ws).sort((a,b)=>b[1]-a[1]).map(e=>e[0]);
-    if (weakTopics.length > 0) {
-      // 70% chance to pick a weak topic
-      if (Math.random() < 0.7) {
-        const pick = weakTopics[Math.floor(Math.random() * Math.min(3, weakTopics.length))];
-        return pick;
-      }
+    if (weakTopics.length > 0 && Math.random() < 0.7) {
+      return weakTopics[Math.floor(Math.random() * Math.min(3, weakTopics.length))];
     }
   }
 
@@ -794,7 +987,6 @@ function pickTopic() {
     topics.sort((a,b) => (ws[b]||0) - (ws[a]||0));
   }
 
-  // Avoid repeating recent topics
   const fresh = topics.filter(t => !state.recentTopics.includes(t));
   const pool = fresh.length > 0 ? fresh : topics;
   const pick = pool[Math.floor(Math.random() * pool.length)];
@@ -803,40 +995,35 @@ function pickTopic() {
   return pick;
 }
 
-// ════════════════════════════════════════════
-// CLAUDE API
-// ════════════════════════════════════════════
+// ── CLAUDE API ─────────────────────────────────────────────────────────────
 function buildSystem() {
   const course = COURSES[state.selectedCourse] || COURSES["CS 320"];
   const ws = state.allWeakSpots[state.selectedCourse] || {};
   const wsTopics = Object.keys(ws).join(", ") || "none identified yet";
   const modeInstructions = {
-    buddy: "You are a warm, encouraging study buddy. Give hints when asked. Be conversational and supportive. Never make Ashley feel bad for not knowing something. Celebrate what she gets right.",
-    strict: "You are a strict exam simulator. No hints. Grade answers clearly and concisely. Be direct. Tell her clearly if an answer is incomplete or incorrect.",
-    weakspots: "Focus intensely on weak areas. Be encouraging but thorough. Push Ashley to fully explain her reasoning — don't let vague answers slide.",
-    practice: "Simulate professor-style exam questions for a UW-Madison course. Match the format and difficulty of university-level exams. Be precise and rigorous."
+    buddy: "You are a warm, encouraging study buddy. Give hints when asked. Be conversational and supportive. Celebrate what she gets right.",
+    strict: "You are a strict exam simulator. No hints. Grade answers clearly. Be direct about errors.",
+    weakspots: "Focus intensely on weak areas. Push Ashley to fully explain her reasoning — don't let vague answers slide.",
+    practice: "Simulate professor-style exam questions for a UW-Madison course. Match the format and difficulty of university-level exams."
   };
   const examContext = state.uploadedExamText
-    ? `\n\nPRACTICE EXAM CONTEXT (use this to generate similar questions):\n${state.uploadedExamText.slice(0, 2000)}`
+    ? `\n\nPRACTICE EXAM CONTEXT:\n${state.uploadedExamText.slice(0, 2000)}`
     : "";
   return `You are StudyBuddy, a personalized AI study assistant for Ashley, a UW-Madison sophomore studying Data Science.
-
 COURSE: ${state.selectedCourse} — ${course.full}
 TOPICS: ${course.topics.join(", ")}
 MODE: ${state.currentMode}
 KNOWN WEAK SPOTS: ${wsTopics}
 ${modeInstructions[state.currentMode] || modeInstructions.buddy}
 ${examContext}
-
-CRITICAL RULES:
+RULES:
 - Ask exactly ONE open-ended question at a time — never multiple choice
 - Questions must require explaining a concept, not just recalling a word
-- When evaluating an answer: (1) acknowledge what was right, (2) fill gaps, (3) explicitly say "weak spot" if this is a recurring struggle
-- If she's completely stuck, give a numbered step-by-step explanation
+- When evaluating: (1) acknowledge what was right, (2) fill gaps, (3) say "weak spot" if recurring struggle
 - Keep feedback to 3-5 sentences unless giving a full explanation
-- When asking a new question, start it on a new line with "**Question:**"
-- After all questions are done (question ${state.totalQuestions}), give a session summary with strengths and weak spots — no new question after that
-- Be friendly, encouraging, and patient at all times`;
+- New question starts with "**Question:**"
+- After question ${state.totalQuestions}, give a session summary — no new question
+- Be friendly, encouraging, and patient`;
 }
 
 async function callAPI(messages) {
@@ -848,20 +1035,19 @@ async function callAPI(messages) {
   return d.reply || "";
 }
 
-// ════════════════════════════════════════════
-// QUESTION FLOW
-// ════════════════════════════════════════════
+// ── QUESTION FLOW ──────────────────────────────────────────────────────────
 async function askNextQuestion() {
   if (state.isLoading) return;
   state.isLoading = true;
   state.awaitingAnswer = true;
+  state.currentAnswer = "";
+  state.currentFeedback = "";
   setSendDisabled(true);
   showTyping();
 
   const topic = pickTopic();
-
   const examHint = state.uploadedExamText
-    ? `Base your question on the uploaded practice exam content, similar to question style and difficulty.`
+    ? `Base your question on the uploaded practice exam content.`
     : `Ask about the topic: "${topic}"`;
 
   try {
@@ -872,11 +1058,11 @@ async function askNextQuestion() {
   } catch(e) {
     removeTyping();
     const fallbacks = {
-      "CS 320": "**Question:** Explain how a graph data structure represents relationships between data points. Walk me through how you would represent a social network (users and friendships) as a graph, and describe what data structure you would use internally.",
-      "CS 252": "**Question:** Explain how Boolean algebra allows us to simplify logic circuits. Walk through an example of simplifying the expression A·B + A·B' using Boolean identities.",
-      "CS 240": "**Question:** Explain the principle of mathematical induction. Walk through all the components needed for a valid proof by induction, and explain what goes wrong if you skip the base case.",
-      "STAT 311": "**Question:** Explain what the Central Limit Theorem states and why it is so important in statistics. Give an example of a situation where you would rely on it in practice.",
-      "KINES 100": "**Question:** Describe the FITT principle and explain how you would apply each component to design a beginner aerobic exercise program for a college student."
+      "CS 320": "**Question:** Explain how a graph data structure represents relationships between data points. Walk me through how you would represent a social network as a graph and describe what data structure you would use internally.",
+      "CS 252": "**Question:** Explain how Boolean algebra allows us to simplify logic circuits. Walk through simplifying A·B + A·B' using Boolean identities.",
+      "CS 240": "**Question:** Explain the principle of mathematical induction. Walk through all components of a valid proof by induction and explain what goes wrong if you skip the base case.",
+      "STAT 311": "**Question:** Explain what the Central Limit Theorem states and why it is important in statistics. Give an example of a situation where you would rely on it.",
+      "KINES 100": "**Question:** Describe the FITT principle and explain how you would apply each component to design a beginner aerobic exercise program."
     };
     state.currentQuestion = fallbacks[state.selectedCourse] || fallbacks["CS 240"];
     addAIBubble(state.currentQuestion);
@@ -893,7 +1079,7 @@ async function sendMessage() {
   input.value = "";
   input.style.height = "auto";
   addUserBubble(text);
-
+  state.currentAnswer = text;
   state.progress.questionsAnswered++;
   state.isLoading = true;
   setSendDisabled(true);
@@ -907,13 +1093,15 @@ async function sendMessage() {
     ]);
     removeTyping();
     addAIBubble(reply);
+    state.currentFeedback = reply;
 
-    // Detect weak spots
     const replyLower = reply.toLowerCase();
-    if (replyLower.includes("weak spot") || replyLower.includes("revisit") || replyLower.includes("not quite") || replyLower.includes("incomplete")) {
-      const topic = extractTopic(state.currentQuestion);
-      if (topic) flagWeakSpot(topic);
-    }
+    const isWeakSpot = replyLower.includes("weak spot") || replyLower.includes("revisit") || replyLower.includes("not quite") || replyLower.includes("incomplete");
+    const topic = extractTopic(state.currentQuestion);
+    if (isWeakSpot && topic) flagWeakSpot(topic);
+
+    // Save practice problem
+    savePracticeProblem(state.currentQuestion, text, reply, isWeakSpot);
 
     state.questionCount++;
     updateProgressBar();
@@ -927,7 +1115,7 @@ async function sendMessage() {
     }
   } catch(e) {
     removeTyping();
-    addAIBubble("There was a brief connection hiccup — no worries! Feel free to keep going. What would you like to add or clarify?");
+    addAIBubble("Brief connection hiccup — no worries! Feel free to keep going.");
     state.questionCount++;
     updateProgressBar();
     if (state.questionCount < state.totalQuestions) setTimeout(() => askNextQuestion(), 800);
@@ -936,7 +1124,38 @@ async function sendMessage() {
 
   state.isLoading = false;
   setSendDisabled(false);
-  updateSyncedStats();
+  refreshStats();
+  saveLocal();
+}
+
+// ── SAVE PRACTICE PROBLEM ──────────────────────────────────────────────────
+function savePracticeProblem(question, answer, feedback, weakSpot) {
+  const problem = {
+    id: Date.now(),
+    course: state.selectedCourse,
+    mode: state.currentMode,
+    question: question.replace("**Question:** ",""),
+    answer,
+    feedback,
+    weakSpot,
+    date: new Date().toISOString()
+  };
+  state.practiceProblems.push(problem);
+  saveLocal();
+
+  // Save to Supabase
+  fetch(`${API_BASE}/api/practice-problems`, {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      user_id: USER_ID,
+      course: state.selectedCourse,
+      mode: state.currentMode,
+      question: problem.question,
+      user_answer: answer,
+      feedback,
+      weak_spot: weakSpot
+    })
+  }).catch(()=>{});
 }
 
 function finishSession() {
@@ -945,8 +1164,6 @@ function finishSession() {
   refreshStats();
   saveLocal();
   syncToSupabase();
-
-  // Save session record
   state.sessions.push({
     id: Date.now(),
     course: state.selectedCourse,
@@ -958,14 +1175,7 @@ function finishSession() {
   saveLocal();
 }
 
-function updateSyncedStats() {
-  refreshStats();
-  saveLocal();
-}
-
-// ════════════════════════════════════════════
-// WEAK SPOTS
-// ════════════════════════════════════════════
+// ── WEAK SPOTS ─────────────────────────────────────────────────────────────
 function extractTopic(q) {
   const course = COURSES[state.selectedCourse];
   if (!course) return null;
@@ -990,28 +1200,23 @@ function flagWeakSpot(topic) {
     }
   }
 
-  // Save to Supabase
-  try {
-    fetch(`${API_BASE}/api/weakspots`, {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({ user_id:USER_ID, course:state.selectedCourse, topic })
-    });
-  } catch(e) {}
+  fetch(`${API_BASE}/api/weakspots`, {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ user_id:USER_ID, course:state.selectedCourse, topic })
+  }).catch(()=>{});
   saveLocal();
 }
 
 function closeWeakPanel() { document.getElementById("weakPanel").style.display="none"; }
 
-// ════════════════════════════════════════════
-// HINT + FULL ANSWER
-// ════════════════════════════════════════════
+// ── HINT + ANSWER ──────────────────────────────────────────────────────────
 async function requestHint() {
   if (state.isLoading || !state.awaitingAnswer) return;
   state.isLoading = true;
   setSendDisabled(true);
   showTyping();
   try {
-    const hint = await callAPI([{ role:"user", content:`Give a helpful hint (2 sentences max, don't reveal the full answer) for: ${state.currentQuestion}` }]);
+    const hint = await callAPI([{ role:"user", content:`Give a helpful hint (2 sentences max, don't reveal the answer) for: ${state.currentQuestion}` }]);
     removeTyping();
     addAIBubble("💡 **Hint:** " + hint);
   } catch(e) {
@@ -1029,7 +1234,7 @@ async function showFullAnswer() {
   setSendDisabled(true);
   showTyping();
   try {
-    const ans = await callAPI([{ role:"user", content:`Give a clear, numbered step-by-step answer to: ${state.currentQuestion}. Make each step concise. Ashley can ask follow-up questions about any step.` }]);
+    const ans = await callAPI([{ role:"user", content:`Give a clear, numbered step-by-step answer to: ${state.currentQuestion}. Ashley can ask follow-up questions about any step.` }]);
     removeTyping();
     const area = document.getElementById("chatArea");
     const wrap = document.createElement("div"); wrap.className="bubble-wrap ai";
@@ -1038,86 +1243,24 @@ async function showFullAnswer() {
     box.innerHTML=`<div class="reveal-label">Step-by-step answer</div>`+ans.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
     wrap.appendChild(lbl); wrap.appendChild(box); area.appendChild(wrap);
     area.scrollTop=area.scrollHeight;
-    addAIBubble("No stress — take your time reading that. Feel free to ask about any step before we move on! 🌿");
+    addAIBubble("Take your time with that. Ask about any step before we move on! 🌿");
     const topic = extractTopic(state.currentQuestion);
     if (topic) flagWeakSpot(topic);
+    savePracticeProblem(state.currentQuestion, "(showed full answer)", ans, true);
     state.questionCount++;
     updateProgressBar();
     if (state.questionCount >= state.totalQuestions) finishSession();
   } catch(e) {
     removeTyping();
-    addAIBubble("No worries at all! Which part of the question is most confusing? Let's start there.");
+    addAIBubble("Which part of the question is most confusing? Let's start there.");
   }
   state.isLoading = false;
   setSendDisabled(false);
 }
 
-function setSendDisabled(v) {
-  const btn = document.getElementById("sendBtn");
-  btn.disabled = v;
-}
+function setSendDisabled(v) { document.getElementById("sendBtn").disabled = v; }
 
-// ════════════════════════════════════════════
-// PDF UPLOAD
-// ════════════════════════════════════════════
-function handleDragOver(e) { e.preventDefault(); document.getElementById("uploadZone").classList.add("drag-over"); }
-function handleDragLeave(e) { document.getElementById("uploadZone").classList.remove("drag-over"); }
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById("uploadZone").classList.remove("drag-over");
-  const file = e.dataTransfer.files[0];
-  if (file) processFile(file);
-}
-function handleFileSelect(e) { const file = e.target.files[0]; if (file) processFile(file); }
-
-function processFile(file) {
-  state.uploadedExamName = file.name;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    // For text files, use directly. For PDFs, we send to backend.
-    if (file.type === "text/plain") {
-      state.uploadedExamText = e.target.result;
-      showUploadedExam(file.name, "Text file — ready to generate questions");
-    } else {
-      // Send PDF to backend for text extraction
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("user_id", USER_ID);
-      fetch(`${API_BASE}/api/upload-exam`, { method:"POST", body:formData })
-        .then(r => r.json())
-        .then(d => {
-          state.uploadedExamText = d.text || "";
-          showUploadedExam(file.name, d.pages ? `${d.pages} pages extracted` : "Ready to generate questions");
-        })
-        .catch(() => {
-          // Graceful fallback: still flag the upload, just no text
-          state.uploadedExamText = "[PDF uploaded — questions will be generated based on course format]";
-          showUploadedExam(file.name, "PDF uploaded");
-        });
-    }
-  };
-  reader.readAsText(file);
-}
-
-function showUploadedExam(name, sub) {
-  const container = document.getElementById("uploadedExams");
-  container.innerHTML = `
-    <div class="uploaded-exam">
-      <i class="ti ti-file-text"></i>
-      <div><div class="uploaded-exam-name">${name}</div><div class="uploaded-exam-sub">${sub}</div></div>
-      <button class="btn btn-sm btn-ghost" onclick="clearExam()"><i class="ti ti-x"></i></button>
-    </div>`;
-}
-function clearExam() {
-  state.uploadedExamText = "";
-  state.uploadedExamName = "";
-  document.getElementById("uploadedExams").innerHTML = "";
-  document.getElementById("pdfInput").value = "";
-}
-
-// ════════════════════════════════════════════
-// EXAM MODAL + STUDY PLAN
-// ════════════════════════════════════════════
+// ── EXAM MODAL ─────────────────────────────────────────────────────────────
 function openExamModal() { document.getElementById("examModal").classList.add("open"); }
 function closeExamModal() { document.getElementById("examModal").classList.remove("open"); }
 
@@ -1127,19 +1270,16 @@ async function saveExam() {
   const topics = document.getElementById("examTopics").value;
   if (!date) { alert("Please enter an exam date."); return; }
   closeExamModal();
-
   const exam = { course, exam_date:date, topics, id:Date.now() };
-  state.exams = state.exams.filter(e => e.course !== course); // replace if exists
+  state.exams = state.exams.filter(e => e.course !== course);
   state.exams.push(exam);
   saveLocal();
-
   try {
     await fetch(`${API_BASE}/api/exams`, {
       method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({ user_id:USER_ID, ...exam })
     });
   } catch(e) {}
-
   renderStudyPlan();
 }
 
@@ -1153,23 +1293,22 @@ function renderStudyPlan() {
   state.exams.sort((a,b) => new Date(a.exam_date)-new Date(b.exam_date)).forEach(exam => {
     const days = Math.max(0, Math.round((new Date(exam.exam_date)-new Date())/86400000));
     const phases = days > 14
-      ? [{ l:`Now → 2 weeks out`, f:`${exam.course} — concepts & understanding`, d:"45 min/night" },
-         { l:`2 weeks out`, f:`Practice questions`, d:"60 min/night" },
-         { l:`1 week out`, f:`Weak spot review`, d:"75 min/night" },
-         { l:`3 days out`, f:`Exam mode drills (no hints)`, d:"90 min/night" }]
+      ? [{l:"Now → 2 weeks out",f:`${exam.course} — concepts & understanding`,d:"45 min/night"},
+         {l:"2 weeks out",f:"Practice questions",d:"60 min/night"},
+         {l:"1 week out",f:"Weak spot review",d:"75 min/night"},
+         {l:"3 days out",f:"Exam mode drills (no hints)",d:"90 min/night"}]
       : days > 7
-      ? [{ l:`This week`, f:`${exam.course} — concepts + questions`, d:"60 min/night" },
-         { l:`Next week`, f:`Exam mode + weak spot review`, d:"90 min/night" }]
+      ? [{l:"This week",f:`${exam.course} — concepts + questions`,d:"60 min/night"},
+         {l:"Next week",f:"Exam mode + weak spot review",d:"90 min/night"}]
       : days > 3
-      ? [{ l:`Each night this week`, f:`${exam.course} — exam mode only`, d:"75 min/night" }]
-      : [{ l:`Today & tomorrow`, f:`Weak spots only — stay calm`, d:"45 min" },
-         { l:`Day before`, f:`Light review, then rest`, d:"20 min" }];
+      ? [{l:"Each night this week",f:`${exam.course} — exam mode only`,d:"75 min/night"}]
+      : [{l:"Today & tomorrow",f:"Weak spots only — stay calm",d:"45 min"},
+         {l:"Day before",f:"Light review, then rest",d:"20 min"}];
 
     const hdr = document.createElement("div");
     hdr.style.cssText="font-size:12px;font-weight:600;color:var(--pg-500);margin-bottom:6px;display:flex;align-items:center;gap:6px;";
     hdr.innerHTML=`<i class="ti ti-calendar-event"></i>${exam.course} exam — ${days} day${days!==1?"s":""} away`;
     container.appendChild(hdr);
-
     phases.forEach(p => {
       const card = document.createElement("div"); card.className="plan-card";
       card.innerHTML=`<div class="plan-row"><div><div class="plan-day">${p.l}</div><div class="plan-focus">${p.f}${exam.topics?` · ${exam.topics.split(",")[0].trim()}`:"" }</div></div><div class="plan-dur">${p.d}</div></div>`;
@@ -1178,17 +1317,14 @@ function renderStudyPlan() {
   });
 }
 
-// ════════════════════════════════════════════
-// HISTORY PAGE
-// ════════════════════════════════════════════
+// ── HISTORY PAGE ───────────────────────────────────────────────────────────
 function renderHistory() {
   const body = document.getElementById("historyBody");
   if (state.sessions.length === 0) {
     body.innerHTML=`<div class="history-empty"><i class="ti ti-book-off"></i><p>No sessions yet — start studying to see your history here!</p></div>`;
     return;
   }
-  const sorted = [...state.sessions].reverse();
-  body.innerHTML = sorted.map(s => {
+  body.innerHTML = [...state.sessions].reverse().map(s => {
     const d = new Date(s.date);
     const dateStr = d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
     const timeStr = d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
@@ -1196,12 +1332,12 @@ function renderHistory() {
     const wsHtml = s.weakSpots.length > 0
       ? s.weakSpots.map(w=>`<span class="weak-chip" style="font-size:10px;">${w}</span>`).join("")
       : `<span style="font-size:11px;color:var(--pg-muted);">No weak spots flagged</span>`;
-    return `<div class="session-card">
+    return `<div class="session-card" onclick="openCourseHistory('${s.course}')">
       <div class="session-card-top">
         <div class="session-card-course">${s.course}</div>
         <div class="session-card-date">${dateStr} · ${timeStr}</div>
       </div>
-      <div class="session-card-meta" style="margin-bottom:8px;">
+      <div class="session-card-meta">
         <span class="session-card-stat"><i class="ti ti-clipboard-list"></i>${s.questions} questions</span>
         <span class="session-card-stat"><i class="ti ti-mood-smile"></i>${modeLabel}</span>
       </div>
@@ -1210,9 +1346,7 @@ function renderHistory() {
   }).join("");
 }
 
-// ════════════════════════════════════════════
-// WEAK SPOTS PAGE
-// ════════════════════════════════════════════
+// ── WEAK SPOTS PAGE ────────────────────────────────────────────────────────
 function renderWeakSpots() {
   const body = document.getElementById("weakspotsBody");
   const allCourses = Object.keys(state.allWeakSpots);
@@ -1241,13 +1375,11 @@ function renderWeakSpots() {
   }).join("");
 }
 
-// ════════════════════════════════════════════
-// SETTINGS PAGE
-// ════════════════════════════════════════════
+// ── SETTINGS PAGE ──────────────────────────────────────────────────────────
 function renderSettings() {
   const qc = state.settings.qCount;
   document.getElementById("qCountDisplay").textContent = qc;
-  document.getElementById("qCountLabel").textContent = qc + " questions";
+  document.getElementById("qCountLabel").textContent = qc + " questions (max 30)";
   const exList = document.getElementById("examsList");
   if (state.exams.length === 0) {
     exList.innerHTML=`<div class="plan-card"><div class="plan-focus" style="color:var(--pg-muted);">No exams set — tap "Exam date" on the Home tab.</div></div>`;
@@ -1269,10 +1401,10 @@ function renderSettings() {
 }
 
 function adjustQCount(delta) {
-  state.settings.qCount = Math.max(3, Math.min(15, state.settings.qCount + delta));
+  state.settings.qCount = Math.max(3, Math.min(30, state.settings.qCount + delta));
   state.totalQuestions = state.settings.qCount;
   document.getElementById("qCountDisplay").textContent = state.settings.qCount;
-  document.getElementById("qCountLabel").textContent = state.settings.qCount + " questions";
+  document.getElementById("qCountLabel").textContent = state.settings.qCount + " questions (max 30)";
   saveLocal();
 }
 
@@ -1293,27 +1425,24 @@ function confirmReset() { document.getElementById("resetModal").classList.add("o
 function resetAllProgress() {
   state.progress = { sessionsCount:0, questionsAnswered:0, streak:0, lastStudied:null };
   state.sessions = [];
+  state.practiceProblems = [];
   state.allWeakSpots = {};
+  state.uploadedExams = {};
   saveLocal();
   refreshStats();
   document.getElementById("resetModal").classList.remove("open");
   renderSettings();
 }
 
-// ════════════════════════════════════════════
-// UTILITIES
-// ════════════════════════════════════════════
+// ── UTILITIES ──────────────────────────────────────────────────────────────
 function handleKey(e) { if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();} }
 function autoResize(el) { el.style.height="auto"; el.style.height=Math.min(el.scrollHeight,110)+"px"; }
 
-// ════════════════════════════════════════════
-// INIT
-// ════════════════════════════════════════════
+// ── INIT ───────────────────────────────────────────────────────────────────
 (function init() {
   loadLocal();
   refreshStats();
   renderStudyPlan();
-  // Try to sync from Supabase in background
   loadFromSupabase().then(refreshStats).catch(()=>{});
 })();
 </script>

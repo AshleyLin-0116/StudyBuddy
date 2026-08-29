@@ -12,7 +12,7 @@ CORS(app)
 
 anthropic = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
-# ── Supabase (optional — gracefully skipped if not configured) ─────────────
+# ── Supabase ───────────────────────────────────────────────────────────────
 supabase = None
 try:
     from supabase import create_client
@@ -49,12 +49,15 @@ def chat():
     )
     reply = response.content[0].text
 
-    # Log to Supabase if available
     t = db("sessions")
     if t:
         try:
-            t.insert({"user_id": user_id, "messages": messages, "reply": reply,
-                      "created_at": datetime.utcnow().isoformat()}).execute()
+            t.insert({
+                "user_id": user_id,
+                "messages": messages,
+                "reply": reply,
+                "created_at": datetime.utcnow().isoformat()
+            }).execute()
         except Exception as e:
             print(f"Session log error: {e}")
 
@@ -66,27 +69,125 @@ def upload_exam():
     if "file" not in request.files:
         return jsonify({"error": "No file provided"}), 400
 
-    file = request.files["file"]
+    file     = request.files["file"]
     filename = file.filename or ""
+    user_id  = request.form.get("user_id", "default")
+    course   = request.form.get("course", "")
 
     if filename.endswith(".txt"):
-        text = file.read().decode("utf-8", errors="ignore")
-        return jsonify({"text": text, "pages": None})
-
-    if filename.endswith(".pdf"):
+        text  = file.read().decode("utf-8", errors="ignore")
+        pages = None
+    elif filename.endswith(".pdf"):
         try:
-            import pypdf
-            import io
+            import pypdf, io
             reader = pypdf.PdfReader(io.BytesIO(file.read()))
-            pages = len(reader.pages)
-            text = "\n\n".join(p.extract_text() or "" for p in reader.pages)
-            return jsonify({"text": text, "pages": pages})
+            pages  = len(reader.pages)
+            text   = "\n\n".join(p.extract_text() or "" for p in reader.pages)
         except ImportError:
-            return jsonify({"text": "[PDF uploaded — questions generated from course format]", "pages": None})
+            text  = "[PDF uploaded — questions generated from course format]"
+            pages = None
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+    else:
+        return jsonify({"error": "Unsupported file type"}), 400
 
-    return jsonify({"error": "Unsupported file type"}), 400
+    # Save to Supabase
+    saved_id = None
+    t = db("uploaded_exams")
+    if t:
+        try:
+            result = t.insert({
+                "user_id":    user_id,
+                "course":     course,
+                "name":       filename,
+                "text":       text,
+                "pages":      pages,
+                "created_at": datetime.utcnow().isoformat()
+            }).execute()
+            saved_id = result.data[0]["id"] if result.data else None
+        except Exception as e:
+            print(f"Exam save error: {e}")
+
+    return jsonify({"text": text, "pages": pages, "id": saved_id, "name": filename})
+
+# ── Get uploaded exams per course ──────────────────────────────────────────
+@app.route("/api/uploaded-exams", methods=["GET"])
+def get_uploaded_exams():
+    user_id = request.args.get("user_id", "default")
+    course  = request.args.get("course")
+    t = db("uploaded_exams")
+    if not t:
+        return jsonify([])
+    try:
+        q = t.select("id, user_id, course, name, pages, created_at").eq("user_id", user_id)
+        if course:
+            q = q.eq("course", course)
+        return jsonify(q.order("created_at", desc=True).execute().data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# ── Get full exam text by ID ───────────────────────────────────────────────
+@app.route("/api/uploaded-exams/<exam_id>", methods=["GET"])
+def get_exam_text(exam_id):
+    t = db("uploaded_exams")
+    if not t:
+        return jsonify({})
+    try:
+        result = t.select("*").eq("id", exam_id).execute()
+        return jsonify(result.data[0] if result.data else {})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# ── Delete uploaded exam ───────────────────────────────────────────────────
+@app.route("/api/uploaded-exams/<exam_id>", methods=["DELETE"])
+def delete_exam(exam_id):
+    t = db("uploaded_exams")
+    if not t:
+        return jsonify({"status": "ok (no db)"})
+    try:
+        t.delete().eq("id", exam_id).execute()
+        return jsonify({"status": "ok"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# ── Save practice problem ──────────────────────────────────────────────────
+@app.route("/api/practice-problems", methods=["POST"])
+def save_practice_problem():
+    data = request.json
+    t = db("practice_problems")
+    if not t:
+        return jsonify({"status": "ok (no db)"})
+    try:
+        t.insert({
+            "user_id":     data.get("user_id", "default"),
+            "course":      data.get("course", ""),
+            "mode":        data.get("mode", "buddy"),
+            "question":    data.get("question", ""),
+            "user_answer": data.get("user_answer", ""),
+            "feedback":    data.get("feedback", ""),
+            "weak_spot":   data.get("weak_spot", False),
+            "created_at":  datetime.utcnow().isoformat()
+        }).execute()
+        return jsonify({"status": "ok"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# ── Get practice problems per course ──────────────────────────────────────
+@app.route("/api/practice-problems", methods=["GET"])
+def get_practice_problems():
+    user_id = request.args.get("user_id", "default")
+    course  = request.args.get("course")
+    limit   = int(request.args.get("limit", 50))
+    t = db("practice_problems")
+    if not t:
+        return jsonify([])
+    try:
+        q = t.select("*").eq("user_id", user_id)
+        if course:
+            q = q.eq("course", course)
+        return jsonify(q.order("created_at", desc=True).limit(limit).execute().data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # ── Progress ───────────────────────────────────────────────────────────────
 @app.route("/api/progress", methods=["GET"])
@@ -146,18 +247,22 @@ def add_weakspot():
             .eq("course",  data["course"]) \
             .eq("topic",   data["topic"]).execute()
         if existing.data:
-            t.update({"count": existing.data[0]["count"] + 1,
-                      "updated_at": datetime.utcnow().isoformat()}) \
-             .eq("id", existing.data[0]["id"]).execute()
+            t.update({
+                "count":      existing.data[0]["count"] + 1,
+                "updated_at": datetime.utcnow().isoformat()
+            }).eq("id", existing.data[0]["id"]).execute()
         else:
-            t.insert({**data, "count": 1,
-                      "created_at": datetime.utcnow().isoformat(),
-                      "updated_at": datetime.utcnow().isoformat()}).execute()
+            t.insert({
+                **data,
+                "count":      1,
+                "created_at": datetime.utcnow().isoformat(),
+                "updated_at": datetime.utcnow().isoformat()
+            }).execute()
         return jsonify({"status": "ok"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ── Exams ──────────────────────────────────────────────────────────────────
+# ── Exam schedule ──────────────────────────────────────────────────────────
 @app.route("/api/exams", methods=["GET"])
 def get_exams():
     user_id = request.args.get("user_id", "default")
@@ -176,7 +281,10 @@ def save_exam():
     if not t:
         return jsonify({"status": "ok (no db)"})
     try:
-        t.insert({**data, "created_at": datetime.utcnow().isoformat()}).execute()
+        t.insert({
+            **data,
+            "created_at": datetime.utcnow().isoformat()
+        }).execute()
         return jsonify({"status": "ok"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
