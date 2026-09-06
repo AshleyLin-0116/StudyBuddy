@@ -200,6 +200,47 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
 
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:var(--pg-200);border-radius:99px;}
+
+/* ── CALENDAR TAB ── */
+.calendar-body{flex:1;overflow-y:auto;padding:16px;}
+.calendar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.calendar-title{font-size:16px;font-weight:600;color:var(--pg-text);}
+.calendar-nav{display:flex;gap:6px;}
+.calendar-filter{margin-bottom:14px;}
+.calendar-grid{background:white;border:1px solid var(--pg-border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:16px;}
+.calendar-weekdays{display:grid;grid-template-columns:repeat(7,1fr);background:var(--pg-100);border-bottom:1px solid var(--pg-border);}
+.calendar-weekday{text-align:center;padding:8px 0;font-size:11px;font-weight:600;color:var(--pg-muted);}
+.calendar-days{display:grid;grid-template-columns:repeat(7,1fr);}
+.calendar-day{min-height:56px;padding:6px 4px;border-right:1px solid var(--pg-border);border-bottom:1px solid var(--pg-border);cursor:pointer;transition:background 0.15s;position:relative;}
+.calendar-day:nth-child(7n){border-right:none;}
+.calendar-day:hover{background:var(--pg-accent);}
+.calendar-day.today{background:var(--pg-accent);}
+.calendar-day.today .day-num{background:var(--pg-400);color:white;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
+.calendar-day.other-month .day-num{color:var(--pg-200);}
+.day-num{font-size:12px;font-weight:500;margin-bottom:3px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
+.day-events{display:flex;flex-direction:column;gap:2px;}
+.day-event{font-size:9px;padding:1px 4px;border-radius:3px;color:white;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4;}
+.day-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin:1px;}
+.day-studied{width:5px;height:5px;border-radius:50%;background:var(--pg-300);display:inline-block;margin:1px;}
+
+/* legend */
+.calendar-legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--pg-text);}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+/* upcoming list */
+.upcoming-list{margin-bottom:16px;}
+.upcoming-item{background:white;border:1px solid var(--pg-border);border-radius:10px;padding:11px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);}
+.upcoming-color-bar{width:4px;border-radius:99px;align-self:stretch;flex-shrink:0;}
+.upcoming-info{flex:1;}
+.upcoming-title{font-size:13px;font-weight:500;}
+.upcoming-sub{font-size:11px;color:var(--pg-muted);margin-top:2px;}
+.upcoming-days{font-size:12px;font-weight:600;color:var(--pg-500);white-space:nowrap;}
+
+/* color picker in settings */
+.course-color-row{background:white;border:1px solid var(--pg-border);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);}
+.color-swatch{width:28px;height:28px;border-radius:50%;border:2px solid var(--pg-border);cursor:pointer;flex-shrink:0;}
+input[type="color"]{width:32px;height:32px;border:none;background:none;cursor:pointer;padding:0;border-radius:50%;}
 </style>
 </head>
 <body>
@@ -279,6 +320,7 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
   <div class="tab-bar">
     <div class="tab-item active" onclick="showTab('home')"><i class="ti ti-home"></i><span>Home</span></div>
     <div class="tab-item" onclick="showTab('history')"><i class="ti ti-history"></i><span>History</span></div>
+    <div class="tab-item" onclick="showTab('calendar')"><i class="ti ti-calendar-month"></i><span>Calendar</span></div>
     <div class="tab-item" onclick="showTab('weakspots')"><i class="ti ti-target"></i><span>Weak Spots</span></div>
     <div class="tab-item" onclick="showTab('settings')"><i class="ti ti-settings"></i><span>Settings</span></div>
   </div>
@@ -431,6 +473,7 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
   <div class="tab-bar">
     <div class="tab-item" onclick="showTab('home')"><i class="ti ti-home"></i><span>Home</span></div>
     <div class="tab-item active" onclick="showTab('history')"><i class="ti ti-history"></i><span>History</span></div>
+    <div class="tab-item" onclick="showTab('calendar')"><i class="ti ti-calendar-month"></i><span>Calendar</span></div>
     <div class="tab-item" onclick="showTab('weakspots')"><i class="ti ti-target"></i><span>Weak Spots</span></div>
     <div class="tab-item" onclick="showTab('settings')"><i class="ti ti-settings"></i><span>Settings</span></div>
   </div>
@@ -453,6 +496,7 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
   <div class="tab-bar">
     <div class="tab-item" onclick="showTab('home')"><i class="ti ti-home"></i><span>Home</span></div>
     <div class="tab-item" onclick="showTab('history')"><i class="ti ti-history"></i><span>History</span></div>
+    <div class="tab-item" onclick="showTab('calendar')"><i class="ti ti-calendar-month"></i><span>Calendar</span></div>
     <div class="tab-item active" onclick="showTab('weakspots')"><i class="ti ti-target"></i><span>Weak Spots</span></div>
     <div class="tab-item" onclick="showTab('settings')"><i class="ti ti-settings"></i><span>Settings</span></div>
   </div>
@@ -510,6 +554,9 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
       <div class="plan-card"><div class="plan-focus" style="color:var(--pg-muted);">No exams set yet — tap "Exam date" on the Home tab.</div></div>
     </div>
 
+    <div class="section-label" style="margin-top:8px;">Course colors</div>
+    <div id="courseColorRows"></div>
+
     <div class="section-label" style="margin-top:8px;">Data</div>
     <div class="settings-row" style="cursor:pointer;" onclick="confirmReset()">
       <div class="settings-row-left">
@@ -524,8 +571,69 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
   <div class="tab-bar">
     <div class="tab-item" onclick="showTab('home')"><i class="ti ti-home"></i><span>Home</span></div>
     <div class="tab-item" onclick="showTab('history')"><i class="ti ti-history"></i><span>History</span></div>
+    <div class="tab-item" onclick="showTab('calendar')"><i class="ti ti-calendar-month"></i><span>Calendar</span></div>
     <div class="tab-item" onclick="showTab('weakspots')"><i class="ti ti-target"></i><span>Weak Spots</span></div>
     <div class="tab-item active" onclick="showTab('settings')"><i class="ti ti-settings"></i><span>Settings</span></div>
+  </div>
+</div>
+
+<!-- ══ CALENDAR SCREEN ══ -->
+<div id="calendarScreen" class="screen">
+  <div class="navbar">
+    <div class="nav-brand">
+      <div class="nav-logo" style="background:var(--indigo);"><i class="ti ti-calendar-month"></i></div>
+      <div><div class="nav-title">Calendar</div><div class="nav-sub">Exams & study milestones</div></div>
+    </div>
+  </div>
+
+  <div class="calendar-body">
+    <!-- filter -->
+    <div class="calendar-filter">
+      <select class="form-input" id="calendarFilter" onchange="renderCalendar()">
+        <option value="all">All courses</option>
+        <option value="CS 320">CS 320</option>
+        <option value="CS 252">CS 252</option>
+        <option value="CS 240">CS 240</option>
+        <option value="STAT 311">STAT 311</option>
+        <option value="KINES 100">KINES 100</option>
+      </select>
+    </div>
+
+    <!-- month nav -->
+    <div class="calendar-header">
+      <button class="btn btn-sm btn-ghost" onclick="changeMonth(-1)"><i class="ti ti-chevron-left"></i></button>
+      <div class="calendar-title" id="calendarMonthLabel"></div>
+      <button class="btn btn-sm btn-ghost" onclick="changeMonth(1)"><i class="ti ti-chevron-right"></i></button>
+    </div>
+
+    <!-- legend -->
+    <div class="calendar-legend" id="calendarLegend"></div>
+
+    <!-- grid -->
+    <div class="calendar-grid">
+      <div class="calendar-weekdays">
+        <div class="calendar-weekday">Sun</div>
+        <div class="calendar-weekday">Mon</div>
+        <div class="calendar-weekday">Tue</div>
+        <div class="calendar-weekday">Wed</div>
+        <div class="calendar-weekday">Thu</div>
+        <div class="calendar-weekday">Fri</div>
+        <div class="calendar-weekday">Sat</div>
+      </div>
+      <div class="calendar-days" id="calendarDays"></div>
+    </div>
+
+    <!-- upcoming -->
+    <div class="section-label">Upcoming</div>
+    <div class="upcoming-list" id="upcomingList"></div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab-item" onclick="showTab('home')"><i class="ti ti-home"></i><span>Home</span></div>
+    <div class="tab-item" onclick="showTab('history')"><i class="ti ti-history"></i><span>History</span></div>
+    <div class="tab-item active" onclick="showTab('calendar')"><i class="ti ti-calendar-month"></i><span>Calendar</span></div>
+    <div class="tab-item" onclick="showTab('weakspots')"><i class="ti ti-target"></i><span>Weak Spots</span></div>
+    <div class="tab-item" onclick="showTab('settings')"><i class="ti ti-settings"></i><span>Settings</span></div>
   </div>
 </div>
 
@@ -601,6 +709,15 @@ const COURSES = {
 let state = {
   selectedCourse: null,
   currentMode: "buddy",
+  courseColors: {
+    "CS 320": "#3b82f6",
+    "CS 252": "#8b5cf6",
+    "CS 240": "#f59e0b",
+    "STAT 311": "#ec4899",
+    "KINES 100": "#14b8a6"
+  },
+  calendarMonth: new Date().getMonth(),
+  calendarYear: new Date().getFullYear(),
   questionCount: 0,
   totalQuestions: 5,
   sessionWeakSpots: [],
@@ -629,11 +746,12 @@ function showScreen(id) {
 }
 
 function showTab(tab) {
-  const map = { home:"homeScreen", history:"historyScreen", weakspots:"weakspotsScreen", settings:"settingsScreen" };
+  const map = { home:"homeScreen", history:"historyScreen", weakspots:"weakspotsScreen", settings:"settingsScreen", calendar:"calendarScreen" };
   showScreen(map[tab]);
   if (tab === "history") renderHistory();
   if (tab === "weakspots") renderWeakSpots();
   if (tab === "settings") renderSettings();
+  if (tab === "calendar") renderCalendar();
 }
 
 // ── COURSE HISTORY SCREEN ──────────────────────────────────────────────────
@@ -825,7 +943,8 @@ function saveLocal() {
       allWeakSpots: state.allWeakSpots,
       exams: state.exams,
       uploadedExams: state.uploadedExams,
-      settings: state.settings
+      settings: state.settings,
+      courseColors: state.courseColors
     }));
   } catch(e) {}
 }
@@ -840,6 +959,7 @@ function loadLocal() {
     if (d.exams) state.exams = d.exams;
     if (d.uploadedExams) state.uploadedExams = d.uploadedExams;
     if (d.settings) state.settings = { ...state.settings, ...d.settings };
+    if (d.courseColors) state.courseColors = { ...state.courseColors, ...d.courseColors };
   } catch(e) {}
 }
 
@@ -1450,6 +1570,7 @@ function renderSettings() {
   const qc = state.settings.qCount;
   document.getElementById("qCountDisplay").textContent = qc;
   document.getElementById("qCountLabel").textContent = qc + " questions (max 30)";
+  renderCourseColors();
   const exList = document.getElementById("examsList");
   if (state.exams.length === 0) {
     exList.innerHTML=`<div class="plan-card"><div class="plan-focus" style="color:var(--pg-muted);">No exams set — tap "Exam date" on the Home tab.</div></div>`;
@@ -1536,6 +1657,209 @@ function openEditExam(id) {
   document.getElementById("examGrade").value = exam.grade || "";
   document.getElementById("gradeGroup").style.display = "block";
   document.getElementById("examModal").classList.add("open");
+}
+
+// ── CALENDAR ───────────────────────────────────────────────────────────────
+function changeMonth(delta) {
+  state.calendarMonth += delta;
+  if (state.calendarMonth > 11) { state.calendarMonth = 0; state.calendarYear++; }
+  if (state.calendarMonth < 0)  { state.calendarMonth = 11; state.calendarYear--; }
+  renderCalendar();
+}
+
+function getMilestones(exam) {
+  const examDate = new Date(exam.exam_date);
+  const milestones = [];
+  const add = (daysBeforeExam, label) => {
+    const d = new Date(examDate);
+    d.setDate(d.getDate() - daysBeforeExam);
+    milestones.push({ date: d, label, course: exam.course, exam_name: exam.exam_name || "" });
+  };
+  add(14, "Start reviewing");
+  add(7,  "Practice questions");
+  add(3,  "Weak spot focus");
+  add(1,  "Exam mode drills");
+  return milestones;
+}
+
+function renderCalendar() {
+  const filter  = document.getElementById("calendarFilter")?.value || "all";
+  const year    = state.calendarYear;
+  const month   = state.calendarMonth;
+  const today   = new Date();
+
+  // Month label
+  document.getElementById("calendarMonthLabel").textContent =
+    new Date(year, month, 1).toLocaleDateString("en-US", { month:"long", year:"numeric" });
+
+  // Filter exams
+  const exams = state.exams.filter(e => filter === "all" || e.course === filter);
+
+  // Build event map: "YYYY-MM-DD" -> array of events
+  const eventMap = {};
+  const addEvent = (dateObj, event) => {
+    const key = dateObj.toISOString().split("T")[0];
+    if (!eventMap[key]) eventMap[key] = [];
+    eventMap[key].push(event);
+  };
+
+  exams.forEach(exam => {
+    // Exam day
+    addEvent(new Date(exam.exam_date), {
+      type: "exam",
+      label: `${exam.course}${exam.exam_name ? " "+exam.exam_name : ""}`,
+      color: state.courseColors[exam.course] || "#4db882"
+    });
+    // Milestones
+    getMilestones(exam).forEach(m => {
+      addEvent(m.date, {
+        type: "milestone",
+        label: m.label,
+        color: state.courseColors[exam.course] || "#4db882"
+      });
+    });
+  });
+
+  // Study days
+  state.sessions.forEach(s => {
+    if (filter !== "all" && s.course !== filter) return;
+    const key = new Date(s.date).toISOString().split("T")[0];
+    if (!eventMap[key]) eventMap[key] = [];
+    eventMap[key].push({ type:"studied", color: state.courseColors[s.course] || "#4db882" });
+  });
+
+  // Build calendar days
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrev = new Date(year, month, 0).getDate();
+
+  const container = document.getElementById("calendarDays");
+  container.innerHTML = "";
+
+  const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+
+  for (let i = 0; i < totalCells; i++) {
+    let dayNum, isCurrentMonth = true;
+    if (i < firstDay) {
+      dayNum = daysInPrev - firstDay + i + 1;
+      isCurrentMonth = false;
+    } else if (i >= firstDay + daysInMonth) {
+      dayNum = i - firstDay - daysInMonth + 1;
+      isCurrentMonth = false;
+    } else {
+      dayNum = i - firstDay + 1;
+    }
+
+    const dateStr = `${year}-${String(month+1).padStart(2,"0")}-${String(dayNum).padStart(2,"0")}`;
+    const isToday = isCurrentMonth &&
+      today.getDate() === dayNum &&
+      today.getMonth() === month &&
+      today.getFullYear() === year;
+
+    const events = (isCurrentMonth && eventMap[dateStr]) || [];
+    const examEvents = events.filter(e => e.type === "exam");
+    const milestoneEvents = events.filter(e => e.type === "milestone");
+    const studiedEvents = events.filter(e => e.type === "studied");
+
+    const cell = document.createElement("div");
+    cell.className = `calendar-day${isCurrentMonth ? "" : " other-month"}${isToday ? " today" : ""}`;
+
+    let eventsHtml = "";
+    examEvents.slice(0,2).forEach(e => {
+      eventsHtml += `<div class="day-event" style="background:${e.color};">${e.label}</div>`;
+    });
+    milestoneEvents.slice(0,1).forEach(e => {
+      eventsHtml += `<div class="day-event" style="background:${e.color}88;color:${e.color};">${e.label}</div>`;
+    });
+    if (studiedEvents.length > 0) {
+      eventsHtml += `<div style="display:flex;flex-wrap:wrap;margin-top:1px;">`;
+      studiedEvents.slice(0,3).forEach(e => {
+        eventsHtml += `<span class="day-studied" style="background:${e.color}66;"></span>`;
+      });
+      eventsHtml += `</div>`;
+    }
+
+    cell.innerHTML = `<div class="day-num">${dayNum}</div><div class="day-events">${eventsHtml}</div>`;
+    container.appendChild(cell);
+  }
+
+  // Legend
+  const legend = document.getElementById("calendarLegend");
+  const courses = filter === "all"
+    ? Object.keys(state.courseColors)
+    : [filter];
+  legend.innerHTML = courses.map(c =>
+    `<div class="legend-item"><span class="legend-dot" style="background:${state.courseColors[c]};"></span>${c}</div>`
+  ).join("") +
+  `<div class="legend-item"><span class="legend-dot" style="background:var(--pg-300);opacity:0.6;"></span>Studied</div>` +
+  `<div class="legend-item"><span class="legend-dot" style="background:#ccc;"></span>Milestone</div>`;
+
+  // Upcoming list
+  const upcoming = document.getElementById("upcomingList");
+  const allUpcoming = [];
+
+  exams.forEach(exam => {
+    const examDate = new Date(exam.exam_date);
+    const days = Math.round((examDate - today) / 86400000);
+    if (days >= -1) {
+      allUpcoming.push({
+        title: `${exam.course}${exam.exam_name ? " — "+exam.exam_name : ""}`,
+        sub: examDate.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"}) +
+             (exam.exam_time ? ` · ${formatTime(exam.exam_time)}` : ""),
+        days,
+        color: state.courseColors[exam.course] || "#4db882",
+        type: "exam"
+      });
+    }
+    getMilestones(exam).forEach(m => {
+      const mDays = Math.round((m.date - today) / 86400000);
+      if (mDays >= 0 && mDays <= 30) {
+        allUpcoming.push({
+          title: m.label,
+          sub: `${exam.course}${exam.exam_name ? " "+exam.exam_name : ""} · ${m.date.toLocaleDateString("en-US",{month:"short",day:"numeric"})}`,
+          days: mDays,
+          color: state.courseColors[exam.course] || "#4db882",
+          type: "milestone"
+        });
+      }
+    });
+  });
+
+  allUpcoming.sort((a,b) => a.days - b.days);
+
+  upcoming.innerHTML = allUpcoming.length === 0
+    ? `<p style="font-size:13px;color:var(--pg-muted);">No upcoming exams — add one from the Home tab!</p>`
+    : allUpcoming.slice(0,10).map(u => `
+      <div class="upcoming-item">
+        <div class="upcoming-color-bar" style="background:${u.color};min-width:4px;"></div>
+        <div class="upcoming-info">
+          <div class="upcoming-title">${u.type === "exam" ? "📅 " : "📍 "}${u.title}</div>
+          <div class="upcoming-sub">${u.sub}</div>
+        </div>
+        <div class="upcoming-days">${u.days === 0 ? "Today" : u.days === 1 ? "Tomorrow" : u.days+"d"}</div>
+      </div>`
+    ).join("");
+}
+
+// ── COURSE COLOR PICKER ────────────────────────────────────────────────────
+function renderCourseColors() {
+  const container = document.getElementById("courseColorRows");
+  if (!container) return;
+  container.innerHTML = Object.entries(state.courseColors).map(([course, color]) => `
+    <div class="course-color-row">
+      <div class="settings-row-left">
+        <div class="settings-label">${course}</div>
+        <div class="settings-sub">${COURSES[course]?.full || ""}</div>
+      </div>
+      <input type="color" value="${color}" onchange="updateCourseColor('${course}', this.value)"
+        style="width:32px;height:32px;border:2px solid var(--pg-border);border-radius:50%;cursor:pointer;padding:2px;">
+    </div>`
+  ).join("");
+}
+
+function updateCourseColor(course, color) {
+  state.courseColors[course] = color;
+  saveLocal();
 }
 
 // ── EXAM HELPERS ───────────────────────────────────────────────────────────
