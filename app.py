@@ -289,5 +289,17 @@ def save_exam():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route("/api/exams/<exam_id>", methods=["PATCH"])
+def update_exam(exam_id):
+    data = request.json
+    t = db("exams")
+    if not t:
+        return jsonify({"status": "ok (no db)"})
+    try:
+        t.update(data).eq("id", exam_id).execute()
+        return jsonify({"status": "ok"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == "__main__":
     app.run(debug=True)

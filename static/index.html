@@ -532,7 +532,7 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
 <!-- ══ EXAM MODAL ══ -->
 <div class="modal-overlay" id="examModal">
   <div class="modal">
-    <h3><i class="ti ti-calendar-event" style="color:var(--pg-400);margin-right:6px;"></i>Set exam date</h3>
+    <h3><i class="ti ti-calendar-event" style="color:var(--pg-400);margin-right:6px;"></i><span id="examModalTitle">Set exam date</span></h3>
     <p class="modal-desc">I'll build a personalized nightly study schedule and automatically switch to exam mode as the date gets closer.</p>
     <div class="form-group">
       <label class="form-label">Course</label>
@@ -544,14 +544,24 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
         <option value="KINES 100">KINES 100 — Exercise, Nutrition & Health</option>
       </select>
     </div>
-    <div class="form-group">
-      <label class="form-label">Exam date</label>
-      <input type="date" class="form-input" id="examDate">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="form-group">
+        <label class="form-label">Exam date</label>
+        <input type="date" class="form-input" id="examDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Exam time <span style="font-weight:400;color:var(--pg-muted);">(optional)</span></label>
+        <input type="time" class="form-input" id="examTime">
+      </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Topics being tested <span style="font-weight:400;color:var(--pg-muted);">(optional)</span></label>
+      <label class="form-label">Topics being tested <span style="font-weight:400;color:var(--pg-muted);">(update anytime)</span></label>
       <textarea class="form-input" rows="2" id="examTopics" style="resize:none;"
         placeholder="e.g. propositional logic, induction, graph theory..."></textarea>
+    </div>
+    <div class="form-group" id="gradeGroup" style="display:none;">
+      <label class="form-label">Your grade <span style="font-weight:400;color:var(--pg-muted);">(fill in after the exam)</span></label>
+      <input type="text" class="form-input" id="examGrade" placeholder="e.g. A, B+, 88/100">
     </div>
     <div class="modal-actions">
       <button class="btn" onclick="closeExamModal()">Cancel</button>
@@ -1261,26 +1271,60 @@ async function showFullAnswer() {
 function setSendDisabled(v) { document.getElementById("sendBtn").disabled = v; }
 
 // ── EXAM MODAL ─────────────────────────────────────────────────────────────
-function openExamModal() { document.getElementById("examModal").classList.add("open"); }
-function closeExamModal() { document.getElementById("examModal").classList.remove("open"); }
+function openExamModal() {
+  state.editingExamId = null;
+  document.getElementById("examModalTitle").textContent = "Set exam date";
+  document.getElementById("examCourse").value = "CS 320";
+  document.getElementById("examDate").value = "";
+  document.getElementById("examTime").value = "";
+  document.getElementById("examTopics").value = "";
+  document.getElementById("examGrade").value = "";
+  document.getElementById("gradeGroup").style.display = "none";
+  document.getElementById("examModal").classList.add("open");
+}
+
+function closeExamModal() {
+  state.editingExamId = null;
+  document.getElementById("examModal").classList.remove("open");
+}
 
 async function saveExam() {
   const course = document.getElementById("examCourse").value;
   const date = document.getElementById("examDate").value;
+  const time = document.getElementById("examTime").value;
   const topics = document.getElementById("examTopics").value;
+  const grade = document.getElementById("examGrade").value;
   if (!date) { alert("Please enter an exam date."); return; }
   closeExamModal();
-  const exam = { course, exam_date:date, topics, id:Date.now() };
-  state.exams = state.exams.filter(e => e.course !== course);
-  state.exams.push(exam);
-  saveLocal();
-  try {
-    await fetch(`${API_BASE}/api/exams`, {
+
+  if (state.editingExamId) {
+    // Update existing exam
+    const idx = state.exams.findIndex(e => String(e.id) === String(state.editingExamId));
+    if (idx >= 0) {
+      state.exams[idx] = { ...state.exams[idx], course, exam_date:date, exam_time:time, topics, grade };
+      saveLocal();
+      // Sync to Supabase if it has a real UUID (not a timestamp ID)
+      if (String(state.editingExamId).length > 10) {
+        fetch(`${API_BASE}/api/exams/${state.editingExamId}`, {
+          method:"PATCH", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ course, exam_date:date, exam_time:time, topics, grade })
+        }).catch(()=>{});
+      }
+    }
+  } else {
+    // Create new exam
+    const exam = { course, exam_date:date, exam_time:time, topics, grade, id:Date.now() };
+    state.exams = state.exams.filter(e => e.course !== course);
+    state.exams.push(exam);
+    saveLocal();
+    fetch(`${API_BASE}/api/exams`, {
       method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({ user_id:USER_ID, ...exam })
-    });
-  } catch(e) {}
+    }).catch(()=>{});
+  }
+
   renderStudyPlan();
+  renderSettings();
 }
 
 function renderStudyPlan() {
@@ -1386,14 +1430,20 @@ function renderSettings() {
   } else {
     exList.innerHTML = state.exams.map(e => {
       const days = Math.max(0, Math.round((new Date(e.exam_date)-new Date())/86400000));
+      const isPast = days === 0;
+      const timeStr = e.exam_time ? ` · ${formatTime(e.exam_time)}` : "";
       return `<div class="plan-card">
         <div class="plan-row">
-          <div>
+          <div style="flex:1;">
             <div class="plan-day">${e.course}</div>
-            <div class="plan-focus">${new Date(e.exam_date).toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})} · ${days} day${days!==1?"s":""} away</div>
-            ${e.topics?`<div class="plan-focus" style="margin-top:2px;">${e.topics}</div>`:""}
+            <div class="plan-focus">${new Date(e.exam_date).toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}${timeStr} · ${isPast ? "exam passed" : days+" day"+(days!==1?"s":"")+` away`}</div>
+            ${e.topics?`<div class="plan-focus" style="margin-top:2px;">📚 ${e.topics}</div>`:""}
+            ${e.grade?`<div style="margin-top:6px;"><span class="tag" style="background:#d1fae5;color:#065f46;">Grade: ${e.grade}</span></div>`:""}
           </div>
-          <button class="btn btn-sm btn-ghost" onclick="removeExam(${e.id})"><i class="ti ti-trash"></i></button>
+          <div style="display:flex;gap:5px;flex-shrink:0;">
+            <button class="btn btn-sm btn-ghost" onclick="openEditExam('${e.id}')"><i class="ti ti-edit"></i></button>
+            <button class="btn btn-sm btn-ghost" onclick="removeExam(${e.id})"><i class="ti ti-trash"></i></button>
+          </div>
         </div>
       </div>`;
     }).join("");
@@ -1432,6 +1482,31 @@ function resetAllProgress() {
   refreshStats();
   document.getElementById("resetModal").classList.remove("open");
   renderSettings();
+}
+
+// ── EXAM TIME FORMATTER ────────────────────────────────────────────────────
+function formatTime(t) {
+  if (!t) return "";
+  const [h, m] = t.split(":");
+  const hour = parseInt(h);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  const display = hour % 12 || 12;
+  return `${display}:${m} ${ampm}`;
+}
+
+// ── EDIT EXAM ──────────────────────────────────────────────────────────────
+function openEditExam(id) {
+  const exam = state.exams.find(e => String(e.id) === String(id));
+  if (!exam) return;
+  state.editingExamId = id;
+  document.getElementById("examModalTitle").textContent = "Edit exam";
+  document.getElementById("examCourse").value = exam.course;
+  document.getElementById("examDate").value = exam.exam_date;
+  document.getElementById("examTime").value = exam.exam_time || "";
+  document.getElementById("examTopics").value = exam.topics || "";
+  document.getElementById("examGrade").value = exam.grade || "";
+  document.getElementById("gradeGroup").style.display = "block";
+  document.getElementById("examModal").classList.add("open");
 }
 
 // ── UTILITIES ──────────────────────────────────────────────────────────────
