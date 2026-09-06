@@ -37,8 +37,11 @@ create table if not exists exams (
   id         uuid default gen_random_uuid() primary key,
   user_id    text not null,
   course     text not null,
+  exam_name  text,
   exam_date  date not null,
+  exam_time  text,
   topics     text,
+  grade      text,
   created_at timestamp default now()
 );
 
