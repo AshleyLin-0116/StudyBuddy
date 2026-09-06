@@ -279,9 +279,9 @@ def save_exam():
     data = request.json
     t = db("exams")
     if not t:
-        return jsonify({"status": "ok (no db)"})
+        return jsonify({"status": "ok (no db)", "reason": "no supabase connection"})
     try:
-        t.insert({
+        result = t.insert({
             "user_id":   data.get("user_id", "default"),
             "course":    data.get("course", ""),
             "exam_name": data.get("exam_name", ""),
@@ -291,9 +291,9 @@ def save_exam():
             "grade":     data.get("grade", ""),
             "created_at": datetime.utcnow().isoformat()
         }).execute()
-        return jsonify({"status": "ok"})
+        return jsonify({"status": "ok", "inserted": result.data})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e), "data_received": data}), 500
 
 @app.route("/api/exams/<exam_id>", methods=["PATCH"])
 def update_exam(exam_id):
