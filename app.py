@@ -282,7 +282,13 @@ def save_exam():
         return jsonify({"status": "ok (no db)"})
     try:
         t.insert({
-            **data,
+            "user_id":   data.get("user_id", "default"),
+            "course":    data.get("course", ""),
+            "exam_name": data.get("exam_name", ""),
+            "exam_date": data.get("exam_date", ""),
+            "exam_time": data.get("exam_time", ""),
+            "topics":    data.get("topics", ""),
+            "grade":     data.get("grade", ""),
             "created_at": datetime.utcnow().isoformat()
         }).execute()
         return jsonify({"status": "ok"})
