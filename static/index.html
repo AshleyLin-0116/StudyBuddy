@@ -864,6 +864,28 @@ async function loadFromSupabase() {
   } catch(e) {}
 }
 
+async function loadExamsFromSupabase() {
+  try {
+    const r = await fetch(`${API_BASE}/api/exams?user_id=${USER_ID}`);
+    const data = await r.json();
+    if (data && data.length > 0) {
+      // Merge Supabase exams with local ones, Supabase wins
+      state.exams = data.map(e => ({
+        id: e.id,
+        course: e.course,
+        exam_name: e.exam_name || "",
+        exam_date: e.exam_date,
+        exam_time: e.exam_time || "",
+        topics: e.topics || "",
+        grade: e.grade || ""
+      }));
+      saveLocal();
+      renderStudyPlan();
+      renderSettings();
+    }
+  } catch(e) {}
+}
+
 // ── STREAK ─────────────────────────────────────────────────────────────────
 function updateStreak() {
   const today = new Date().toDateString();
@@ -1551,6 +1573,7 @@ function autoResize(el) { el.style.height="auto"; el.style.height=Math.min(el.sc
   refreshStats();
   renderStudyPlan();
   loadFromSupabase().then(refreshStats).catch(()=>{});
+  loadExamsFromSupabase();
 })();
 </script>
 </body>
