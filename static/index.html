@@ -241,6 +241,20 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
 .course-color-row{background:white;border:1px solid var(--pg-border);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);}
 .color-swatch{width:28px;height:28px;border-radius:50%;border:2px solid var(--pg-border);cursor:pointer;flex-shrink:0;}
 input[type="color"]{width:32px;height:32px;border:none;background:none;cursor:pointer;padding:0;border-radius:50%;}
+
+/* ── SESSION OPTIONS ── */
+.session-option-btn {
+  display:flex;align-items:flex-start;gap:10px;width:100%;
+  background:var(--pg-50);border:1px solid var(--pg-border);
+  border-radius:10px;padding:11px 13px;cursor:pointer;
+  transition:all 0.15s;text-align:left;font-family:inherit;
+  color:var(--pg-text);
+}
+.session-option-btn:hover { background:var(--pg-accent);border-color:var(--pg-400); }
+.session-option-btn:disabled { cursor:not-allowed; }
+.session-option-btn i { font-size:18px;color:var(--pg-400);flex-shrink:0;margin-top:1px; }
+.session-option-btn span { display:block;font-size:11px;color:var(--pg-muted);margin-top:2px;font-weight:400; }
+
 </style>
 </head>
 <body>
@@ -450,7 +464,11 @@ input[type="color"]{width:32px;height:32px;border:none;background:none;cursor:po
   </div>
 
   <div class="input-bar">
-    <textarea id="userInput" placeholder="Type your answer... or ask a follow-up question" rows="1"
+    <button class="btn btn-ghost btn-sm" id="uploadInChatBtn" onclick="document.getElementById('inChatFileInput').click()" style="flex-shrink:0;padding:8px;">
+      <i class="ti ti-paperclip" style="font-size:18px;color:var(--pg-400);"></i>
+    </button>
+    <input type="file" id="inChatFileInput" accept=".pdf,.txt" style="display:none" onchange="handleInChatFileSelect(event)">
+    <textarea id="userInput" placeholder="Type your answer, ask a question, or describe what you want to work on..." rows="1"
       onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
     <button class="send-btn" id="sendBtn" onclick="sendMessage()"><i class="ti ti-send"></i></button>
   </div>
@@ -1069,16 +1087,14 @@ function startStudy(mode) {
   showScreen("studyScreen");
 
   const greetings = {
-    buddy: `Hey Ashley! Let's dig into **${state.selectedCourse}** 🌿\n\nI'll ask open-ended questions — no guessing! Use **Hint** if you're stuck, or **实在不知道** for a full step-by-step explanation.\n\nReady? Here's your first question:`,
-    strict: `Exam mode activated for **${state.selectedCourse}**. No hints. Answer as you would on the real exam. Let's go 💪`,
-    weakspots: `Let's target your weak spots in **${state.selectedCourse}**. Turning weaknesses into strengths 🎯`,
-    practice: state.uploadedExamText
-      ? `Practice exam mode for **${state.selectedCourse}**. Generating questions based on your uploaded exam 📄`
-      : `Practice exam mode for **${state.selectedCourse}**. I'll generate professor-style questions 📄`
+    buddy: `Hey Ashley! Welcome to your **${state.selectedCourse}** study session 🌿\n\nWhat would you like to work on today?`,
+    strict: `Exam mode for **${state.selectedCourse}**. What would you like to be tested on today?`,
+    weakspots: `Let's target your weak spots in **${state.selectedCourse}** 🎯\n\nWhat would you like to work on today?`,
+    practice: `Practice session for **${state.selectedCourse}** 📄\n\nWhat would you like to work on today?`
   };
 
   addAIBubble(greetings[mode] || greetings.buddy);
-  setTimeout(() => askNextQuestion(), 900);
+  setTimeout(() => askWhatToWorkOn(), 900);
 }
 
 function endSession() {
@@ -1126,6 +1142,9 @@ function removeTyping() { const el=document.getElementById("typingWrap"); if(el)
 
 // ── ADAPTIVE TOPIC ─────────────────────────────────────────────────────────
 function pickTopic() {
+  // If user specified a topic for this session, use it
+  if (state.sessionFocusTopic) return state.sessionFocusTopic;
+
   const course = COURSES[state.selectedCourse];
   if (!course) return "general concepts";
   let topics = [...course.topics];
@@ -1198,6 +1217,9 @@ async function askNextQuestion() {
   state.awaitingAnswer = true;
   state.currentAnswer = "";
   state.currentFeedback = "";
+  state.sessionSubMode = null;
+  state.sessionFocusTopic = null;
+  state.freeStudyHistory = [];
   setSendDisabled(true);
   showTyping();
 
@@ -1235,6 +1257,41 @@ async function sendMessage() {
   input.value = "";
   input.style.height = "auto";
   addUserBubble(text);
+
+  // Handle topic selection for practice questions mode
+  if (state.sessionSubMode === "questions" && !state.awaitingAnswer) {
+    state.sessionFocusTopic = text;
+    state.sessionSubMode = "questions_ready";
+    addAIBubble(`Got it — focusing on **${text}**. Here's your first question:`);
+    setTimeout(() => askNextQuestion(), 600);
+    return;
+  }
+
+  // Handle free study mode — conversational, no question counter
+  if (state.sessionSubMode === "free") {
+    state.isLoading = true;
+    setSendDisabled(true);
+    showTyping();
+    try {
+      const reply = await callAPI([
+        ...state.freeStudyHistory || [],
+        { role:"user", content: text }
+      ]);
+      removeTyping();
+      addAIBubble(reply);
+      if (!state.freeStudyHistory) state.freeStudyHistory = [];
+      state.freeStudyHistory.push({ role:"user", content:text });
+      state.freeStudyHistory.push({ role:"assistant", content:reply });
+      if (state.freeStudyHistory.length > 20) state.freeStudyHistory = state.freeStudyHistory.slice(-20);
+    } catch(e) {
+      removeTyping();
+      addAIBubble("Brief connection hiccup — feel free to keep going!");
+    }
+    state.isLoading = false;
+    setSendDisabled(false);
+    return;
+  }
+
   state.currentAnswer = text;
   state.progress.questionsAnswered++;
   state.isLoading = true;
@@ -1282,6 +1339,137 @@ async function sendMessage() {
   setSendDisabled(false);
   refreshStats();
   saveLocal();
+}
+
+// ── SESSION OPENER ─────────────────────────────────────────────────────────
+async function askWhatToWorkOn() {
+  // Show interactive option buttons in chat
+  const area = document.getElementById("chatArea");
+  const wrap = document.createElement("div");
+  wrap.className = "bubble-wrap ai";
+  const lbl = document.createElement("div");
+  lbl.className = "bubble-label";
+  lbl.textContent = "StudyBuddy";
+
+  const optionsHtml = `
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
+      <button class="session-option-btn" onclick="selectSessionOption('questions')">
+        <i class="ti ti-help-circle"></i> Practice questions
+        <span>AI generates open-ended questions on a topic you choose</span>
+      </button>
+      <button class="session-option-btn" onclick="selectSessionOption('upload')">
+        <i class="ti ti-file-upload"></i> Work from a file
+        <span>Upload homework, a practice exam, or notes</span>
+      </button>
+      <button class="session-option-btn" onclick="selectSessionOption('weakspots')">
+        <i class="ti ti-target"></i> Target my weak spots
+        <span>Focus on topics that have tripped you up before</span>
+      </button>
+      <button class="session-option-btn" onclick="selectSessionOption('free')">
+        <i class="ti ti-messages"></i> Free study
+        <span>Ask me anything — explain concepts, walk through problems</span>
+      </button>
+    </div>`;
+
+  const b = document.createElement("div");
+  b.className = "bubble ai";
+  b.innerHTML = `What would you like to work on today?${optionsHtml}`;
+  wrap.appendChild(lbl);
+  wrap.appendChild(b);
+  area.appendChild(wrap);
+  area.scrollTop = area.scrollHeight;
+}
+
+async function selectSessionOption(option) {
+  // Remove option buttons
+  document.querySelectorAll(".session-option-btn").forEach(btn => {
+    btn.disabled = true;
+    btn.style.opacity = "0.5";
+  });
+
+  if (option === "questions") {
+    addAIBubble("Great! What topic would you like to focus on? You can be specific (e.g. *mathematical induction*, *Boolean algebra*) or general (e.g. *whatever I'm weakest at*).");
+    state.sessionSubMode = "questions";
+
+  } else if (option === "upload") {
+    const area = document.getElementById("chatArea");
+    const wrap = document.createElement("div");
+    wrap.className = "bubble-wrap ai";
+    const lbl = document.createElement("div");
+    lbl.className = "bubble-label";
+    lbl.textContent = "StudyBuddy";
+    const b = document.createElement("div");
+    b.className = "bubble ai";
+    b.innerHTML = `Upload your file below and I'll generate questions based on it 📎
+      <div style="margin-top:10px;">
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('inChatFileInput').click()">
+          <i class="ti ti-upload"></i> Choose file (PDF or text)
+        </button>
+      </div>`;
+    wrap.appendChild(lbl);
+    wrap.appendChild(b);
+    area.appendChild(wrap);
+    area.scrollTop = area.scrollHeight;
+    state.sessionSubMode = "upload";
+
+  } else if (option === "weakspots") {
+    const ws = state.allWeakSpots[state.selectedCourse] || {};
+    const topics = Object.keys(ws);
+    if (topics.length === 0) {
+      addAIBubble(`I don't have any weak spots recorded for **${state.selectedCourse}** yet — we'll identify them as we go! Let's start with a general question.`);
+    } else {
+      addAIBubble(`I'll focus on your weak spots: **${topics.slice(0,3).join(", ")}**${topics.length > 3 ? " and more" : ""}. Let's go! 🎯`);
+    }
+    state.sessionSubMode = "weakspots";
+    setTimeout(() => askNextQuestion(), 800);
+
+  } else if (option === "free") {
+    addAIBubble(`Free study mode — ask me anything! I can explain concepts, walk through problems step by step, or quiz you on whatever you're working on. What's on your mind?`);
+    state.sessionSubMode = "free";
+    state.awaitingAnswer = false;
+  }
+}
+
+function handleInChatFileSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  addUserBubble(`📎 ${file.name}`);
+
+  if (file.type === "text/plain") {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      state.uploadedExamText = e.target.result;
+      state.uploadedExamName = file.name;
+      addAIBubble(`Got it — I've read **${file.name}**. I'll generate questions based on this. Ready when you are!`);
+      setTimeout(() => askNextQuestion(), 800);
+    };
+    reader.readAsText(file);
+  } else {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("user_id", USER_ID);
+    formData.append("course", state.selectedCourse);
+    addAIBubble("Reading your file... 📄");
+    fetch(`${API_BASE}/api/upload-exam`, { method:"POST", body:formData })
+      .then(r => r.json())
+      .then(d => {
+        state.uploadedExamText = d.text || "";
+        state.uploadedExamName = file.name;
+        const pages = d.pages ? ` (${d.pages} pages)` : "";
+        // Update the "Reading" bubble
+        document.querySelectorAll(".bubble.ai").forEach((b, i, arr) => {
+          if (i === arr.length - 1) b.innerHTML = `Got it — I've read **${file.name}**${pages}. I'll generate questions based on this. Ready when you are!`;
+        });
+        setTimeout(() => askNextQuestion(), 800);
+      })
+      .catch(() => {
+        state.uploadedExamText = "[File uploaded]";
+        addAIBubble(`Uploaded **${file.name}** — I'll generate questions based on the course format. Ready!`);
+        setTimeout(() => askNextQuestion(), 800);
+      });
+  }
+  event.target.value = "";
 }
 
 // ── SAVE PRACTICE PROBLEM ──────────────────────────────────────────────────
