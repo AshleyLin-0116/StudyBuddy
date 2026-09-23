@@ -255,6 +255,50 @@ input[type="color"]{width:32px;height:32px;border:none;background:none;cursor:po
 .session-option-btn i { font-size:18px;color:var(--pg-400);flex-shrink:0;margin-top:1px; }
 .session-option-btn span { display:block;font-size:11px;color:var(--pg-muted);margin-top:2px;font-weight:400; }
 
+/* ── CHAT HISTORY ── */
+.session-divider {
+  display:flex;align-items:center;gap:10px;margin:16px 0;
+  font-size:11px;color:var(--pg-muted);
+}
+.session-divider::before,.session-divider::after {
+  content:"";flex:1;height:1px;background:var(--pg-border);
+}
+.continue-prompt {
+  background:var(--pg-accent);border:1px solid var(--pg-border);
+  border-radius:12px;padding:14px 16px;max-width:82%;
+}
+.continue-prompt p { font-size:13px;color:var(--pg-text);margin-bottom:10px;line-height:1.5; }
+.continue-prompt-btns { display:flex;gap:8px; }
+
+/* ── EDITABLE MESSAGES ── */
+.bubble.user { position:relative; cursor:pointer; }
+.bubble.user:hover::after {
+  content:"✏️";position:absolute;top:-8px;right:-8px;
+  font-size:12px;background:white;border-radius:50%;
+  width:20px;height:20px;display:flex;align-items:center;
+  justify-content:center;box-shadow:var(--shadow);
+}
+.edit-textarea {
+  width:100%;border:none;background:transparent;color:white;
+  font-family:inherit;font-size:14px;line-height:1.6;
+  resize:none;outline:none;min-height:40px;
+}
+.edit-actions { display:flex;gap:6px;margin-top:8px;justify-content:flex-end; }
+.edit-save-btn {
+  background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.4);
+  color:white;border-radius:6px;padding:4px 10px;font-size:11px;
+  cursor:pointer;font-family:inherit;
+}
+.edit-cancel-btn {
+  background:transparent;border:1px solid rgba(255,255,255,0.2);
+  color:rgba(255,255,255,0.7);border-radius:6px;padding:4px 10px;
+  font-size:11px;cursor:pointer;font-family:inherit;
+}
+
+/* ── CHAT VIEWER ── */
+#chatViewer { overflow-y:auto; max-height:60vh; }
+#chatViewerMessages { padding-bottom:8px; }
+
 </style>
 </head>
 <body>
@@ -350,7 +394,10 @@ input[type="color"]{width:32px;height:32px;border:none;background:none;cursor:po
         <div class="nav-sub" id="courseHistorySub">Data Science Programming II</div>
       </div>
     </div>
-    <button class="btn btn-primary btn-sm" onclick="startStudyFromCourse()"><i class="ti ti-bolt"></i> Study now</button>
+    <div style="display:flex;gap:6px;">
+      <button class="btn btn-sm btn-ghost" onclick="clearCourseChat(state.selectedCourse)" title="Clear chat history"><i class="ti ti-trash" style="color:var(--red);"></i></button>
+      <button class="btn btn-primary btn-sm" onclick="startStudyFromCourse()"><i class="ti ti-bolt"></i> Study now</button>
+    </div>
   </div>
 
   <!-- course tabs -->
@@ -358,6 +405,7 @@ input[type="color"]{width:32px;height:32px;border:none;background:none;cursor:po
     <div class="course-tab active" onclick="switchCourseTab('study')">Study</div>
     <div class="course-tab" onclick="switchCourseTab('exams')">Practice Exams</div>
     <div class="course-tab" onclick="switchCourseTab('problems')">Problem History</div>
+    <div class="course-tab" onclick="switchCourseTab('chats')">Chats</div>
   </div>
 
   <div class="course-history-body">
@@ -417,6 +465,29 @@ input[type="color"]{width:32px;height:32px;border:none;background:none;cursor:po
         <div class="history-empty" style="padding:40px 20px;">
           <i class="ti ti-notes" style="font-size:40px;color:var(--pg-200);display:block;margin-bottom:10px;"></i>
           <p style="font-size:13px;">No problems yet — start a study session to see your history here!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHATS TAB -->
+    <div class="course-tab-panel" id="tabChats">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="section-label" style="margin:0;">Chat history</div>
+        <button class="btn btn-sm btn-ghost" id="clearChatBtn" onclick="clearCourseChat(state.selectedCourse)" style="color:var(--red);font-size:11px;">
+          <i class="ti ti-trash"></i> Clear all
+        </button>
+      </div>
+      <div id="chatHistoryList"></div>
+
+      <!-- Chat viewer (hidden by default) -->
+      <div id="chatViewer" style="display:none;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <button class="btn btn-ghost btn-sm" onclick="closeChatViewer()"><i class="ti ti-arrow-left"></i></button>
+          <div style="font-size:13px;font-weight:500;" id="chatViewerTitle"></div>
+        </div>
+        <div id="chatViewerMessages" style="display:flex;flex-direction:column;gap:10px;"></div>
+        <div style="margin-top:14px;">
+          <button class="btn btn-primary btn-sm" onclick="resumeFromViewer()"><i class="ti ti-bolt"></i> Resume this session</button>
         </div>
       </div>
     </div>
@@ -727,6 +798,7 @@ const COURSES = {
 let state = {
   selectedCourse: null,
   currentMode: "buddy",
+  chatHistoryPerCourse: {},
   courseColors: {
     "CS 320": "#3b82f6",
     "CS 252": "#8b5cf6",
@@ -781,15 +853,21 @@ function openCourseHistory(course) {
   renderCourseWeakSpots(course);
   renderExamLibrary(course);
   renderProblemHistory(course);
+  // Load chat history from Supabase if not already loaded
+  if (!state.chatHistoryPerCourse[course] || state.chatHistoryPerCourse[course].length === 0) {
+    loadChatHistoryFromSupabase(course);
+  }
   showScreen("courseHistoryScreen");
 }
 
 function switchCourseTab(tab) {
   document.querySelectorAll(".course-tab").forEach(t => t.classList.remove("active"));
   document.querySelectorAll(".course-tab-panel").forEach(p => p.classList.remove("active"));
-  const tabMap = { study:0, exams:1, problems:2 };
+  const tabMap = { study:0, exams:1, problems:2, chats:3 };
+  const panelMap = { study:"tabStudy", exams:"tabExams", problems:"tabProblems", chats:"tabChats" };
   document.querySelectorAll(".course-tab")[tabMap[tab]].classList.add("active");
-  document.getElementById(tab === "study" ? "tabStudy" : tab === "exams" ? "tabExams" : "tabProblems").classList.add("active");
+  document.getElementById(panelMap[tab]).classList.add("active");
+  if (tab === "chats") renderChatHistoryList(state.selectedCourse);
 }
 
 function renderCourseWeakSpots(course) {
@@ -962,7 +1040,8 @@ function saveLocal() {
       exams: state.exams,
       uploadedExams: state.uploadedExams,
       settings: state.settings,
-      courseColors: state.courseColors
+      courseColors: state.courseColors,
+      chatHistoryPerCourse: state.chatHistoryPerCourse
     }));
   } catch(e) {}
 }
@@ -978,6 +1057,7 @@ function loadLocal() {
     if (d.uploadedExams) state.uploadedExams = d.uploadedExams;
     if (d.settings) state.settings = { ...state.settings, ...d.settings };
     if (d.courseColors) state.courseColors = { ...state.courseColors, ...d.courseColors };
+    if (d.chatHistoryPerCourse) state.chatHistoryPerCourse = d.chatHistoryPerCourse;
   } catch(e) {}
 }
 
@@ -1086,15 +1166,37 @@ function startStudy(mode) {
   updateProgressBar();
   showScreen("studyScreen");
 
-  const greetings = {
-    buddy: `Hey Ashley! Welcome to your **${state.selectedCourse}** study session 🌿\n\nWhat would you like to work on today?`,
-    strict: `Exam mode for **${state.selectedCourse}**. What would you like to be tested on today?`,
-    weakspots: `Let's target your weak spots in **${state.selectedCourse}** 🎯\n\nWhat would you like to work on today?`,
-    practice: `Practice session for **${state.selectedCourse}** 📄\n\nWhat would you like to work on today?`
-  };
+  // Load existing chat history for this course
+  const existingHistory = state.chatHistoryPerCourse[state.selectedCourse] || [];
 
-  addAIBubble(greetings[mode] || greetings.buddy);
-  setTimeout(() => askWhatToWorkOn(), 900);
+  if (existingHistory.length > 0) {
+    // Render previous messages
+    existingHistory.forEach(msg => {
+      if (msg.role === "divider") {
+        addSessionDivider(msg.content);
+      } else if (msg.role === "user") {
+        addUserBubble(msg.content);
+      } else {
+        addAIBubble(msg.content);
+      }
+    });
+    // Show continue prompt
+    showContinuePrompt();
+  } else {
+    // Fresh start
+    const greetings = {
+      buddy: `Hey Ashley! Welcome to your **${state.selectedCourse}** study session 🌿\n\nWhat would you like to work on today?`,
+      strict: `Exam mode for **${state.selectedCourse}**. What would you like to be tested on today?`,
+      weakspots: `Let's target your weak spots in **${state.selectedCourse}** 🎯\n\nWhat would you like to work on today?`,
+      practice: `Practice session for **${state.selectedCourse}** 📄\n\nWhat would you like to work on today?`
+    };
+    const greeting = greetings[mode] || greetings.buddy;
+    addAIBubble(greeting);
+    saveChatMessage("ai", greeting);
+    setTimeout(() => askWhatToWorkOn(), 900);
+  }
+
+  state.chatMessages = [...existingHistory];
 }
 
 function endSession() {
@@ -1113,7 +1215,7 @@ function endSession() {
 }
 
 // ── BUBBLES ────────────────────────────────────────────────────────────────
-function addBubble(text, role) {
+function addBubble(text, role, skipSave) {
   const area = document.getElementById("chatArea");
   const wrap = document.createElement("div");
   wrap.className = "bubble-wrap " + role;
@@ -1123,13 +1225,114 @@ function addBubble(text, role) {
   const b = document.createElement("div");
   b.className = "bubble " + role;
   b.innerHTML = text.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
-  wrap.appendChild(lbl); wrap.appendChild(b);
+  b.dataset.rawText = text;
+
+  // Double-click to edit user messages
+  if (role === "user") {
+    b.ondblclick = () => enterEditMode(b, wrap, text);
+    b.title = "Double-click to edit";
+  }
+
+  wrap.appendChild(lbl);
+  wrap.appendChild(b);
   area.appendChild(wrap);
   area.scrollTop = area.scrollHeight;
   return b;
 }
-const addAIBubble = t => addBubble(t,"ai");
-const addUserBubble = t => addBubble(t,"user");
+
+const addAIBubble = (t, skipSave) => addBubble(t, "ai", skipSave);
+const addUserBubble = (t, skipSave) => addBubble(t, "user", skipSave);
+
+// ── EDIT MESSAGE ───────────────────────────────────────────────────────────
+function enterEditMode(bubble, wrap, originalText) {
+  if (state.isLoading) return;
+  const textarea = document.createElement("textarea");
+  textarea.className = "edit-textarea";
+  textarea.value = originalText;
+  textarea.rows = originalText.split("\n").length || 1;
+
+  const actions = document.createElement("div");
+  actions.className = "edit-actions";
+
+  const saveBtn = document.createElement("button");
+  saveBtn.className = "edit-save-btn";
+  saveBtn.textContent = "Save & re-generate";
+  saveBtn.onclick = () => saveEdit(wrap, textarea.value, originalText);
+
+  const cancelBtn = document.createElement("button");
+  cancelBtn.className = "edit-cancel-btn";
+  cancelBtn.textContent = "Cancel";
+  cancelBtn.onclick = () => {
+    bubble.innerHTML = originalText.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
+    if (actions.parentNode) actions.remove();
+    if (textarea.parentNode) textarea.remove();
+    wrap.querySelector(".bubble").style.display = "";
+  };
+
+  actions.appendChild(cancelBtn);
+  actions.appendChild(saveBtn);
+  bubble.style.display = "none";
+  wrap.appendChild(textarea);
+  wrap.appendChild(actions);
+  textarea.focus();
+  textarea.select();
+}
+
+async function saveEdit(editedWrap, newText, originalText) {
+  if (!newText.trim() || newText === originalText) {
+    editedWrap.querySelector(".bubble").style.display = "";
+    editedWrap.querySelectorAll("textarea, .edit-actions").forEach(el => el.remove());
+    return;
+  }
+
+  const area = document.getElementById("chatArea");
+  const allWraps = Array.from(area.children);
+  const editedIndex = allWraps.indexOf(editedWrap);
+
+  // Remove everything after the edited message
+  for (let i = allWraps.length - 1; i > editedIndex; i--) {
+    allWraps[i].remove();
+  }
+
+  // Update the edited bubble
+  editedWrap.querySelectorAll("textarea, .edit-actions").forEach(el => el.remove());
+  const bubble = editedWrap.querySelector(".bubble");
+  bubble.style.display = "";
+  bubble.innerHTML = newText.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
+  bubble.dataset.rawText = newText;
+  bubble.ondblclick = () => enterEditMode(bubble, editedWrap, newText);
+
+  // Update chat history — trim everything after this point
+  const course = state.selectedCourse;
+  const history = state.chatHistoryPerCourse[course] || [];
+  const msgIndex = history.findIndex(m => m.role === "user" && m.content === originalText);
+  if (msgIndex >= 0) {
+    state.chatHistoryPerCourse[course] = history.slice(0, msgIndex);
+  }
+
+  // Re-generate AI response
+  state.currentQuestion = newText;
+  state.isLoading = true;
+  setSendDisabled(true);
+  showTyping();
+
+  try {
+    const reply = await callAPI([
+      { role:"user", content: newText }
+    ]);
+    removeTyping();
+    addAIBubble(reply);
+    saveChatMessage("user", newText);
+    saveChatMessage("ai", reply);
+  } catch(e) {
+    removeTyping();
+    addAIBubble("Brief connection hiccup — no worries! Feel free to keep going.");
+  }
+
+  state.isLoading = false;
+  setSendDisabled(false);
+  saveLocal();
+}
 
 function showTyping() {
   const area = document.getElementById("chatArea");
@@ -1220,6 +1423,7 @@ async function askNextQuestion() {
   state.sessionSubMode = null;
   state.sessionFocusTopic = null;
   state.freeStudyHistory = [];
+  state.chatMessages = [];
   setSendDisabled(true);
   showTyping();
 
@@ -1307,9 +1511,15 @@ async function sendMessage() {
     removeTyping();
     addAIBubble(reply);
     state.currentFeedback = reply;
+    saveChatMessage("user", text);
+    saveChatMessage("ai", reply);
 
     const replyLower = reply.toLowerCase();
-    const isWeakSpot = replyLower.includes("weak spot") || replyLower.includes("revisit") || replyLower.includes("not quite") || replyLower.includes("incomplete");
+    const isPracticeMode = ["questions", "questions_ready", "weakspots"].includes(state.sessionSubMode);
+    const isWeakSpot = isPracticeMode && (
+      replyLower.includes("weak spot") || replyLower.includes("revisit") ||
+      replyLower.includes("not quite") || replyLower.includes("incomplete")
+    );
     const topic = extractTopic(state.currentQuestion);
     if (isWeakSpot && topic) flagWeakSpot(topic);
 
@@ -1588,9 +1798,10 @@ async function showFullAnswer() {
     wrap.appendChild(lbl); wrap.appendChild(box); area.appendChild(wrap);
     area.scrollTop=area.scrollHeight;
     addAIBubble("Take your time with that. Ask about any step before we move on! 🌿");
+    const isPracticeMode = ["questions", "questions_ready", "weakspots"].includes(state.sessionSubMode);
     const topic = extractTopic(state.currentQuestion);
-    if (topic) flagWeakSpot(topic);
-    savePracticeProblem(state.currentQuestion, "(showed full answer)", ans, true);
+    if (isPracticeMode && topic) flagWeakSpot(topic);
+    savePracticeProblem(state.currentQuestion, "(showed full answer)", ans, isPracticeMode);
     state.questionCount++;
     updateProgressBar();
     if (state.questionCount >= state.totalQuestions) finishSession();
@@ -1702,26 +1913,58 @@ function renderHistory() {
     body.innerHTML=`<div class="history-empty"><i class="ti ti-book-off"></i><p>No sessions yet — start studying to see your history here!</p></div>`;
     return;
   }
-  body.innerHTML = [...state.sessions].reverse().map(s => {
+  body.innerHTML = [...state.sessions].reverse().map((s, ri) => {
+    const realIndex = state.sessions.length - 1 - ri;
     const d = new Date(s.date);
     const dateStr = d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
     const timeStr = d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
     const modeLabel = { buddy:"Study buddy", strict:"Exam mode", weakspots:"Weak spot focus", practice:"Practice exam" }[s.mode] || s.mode;
-    const wsHtml = s.weakSpots.length > 0
-      ? s.weakSpots.map(w=>`<span class="weak-chip" style="font-size:10px;">${w}</span>`).join("")
+    const wsHtml = s.weakSpots && s.weakSpots.length > 0
+      ? s.weakSpots.map((w,wi) => `<span class="weak-chip" style="font-size:10px;cursor:pointer;" onclick="event.stopPropagation();removeSessionWeakSpot(${realIndex},${wi})" title="Remove">${w} ×</span>`).join("")
       : `<span style="font-size:11px;color:var(--pg-muted);">No weak spots flagged</span>`;
-    return `<div class="session-card" onclick="openCourseHistory('${s.course}')">
+    return `<div class="session-card">
       <div class="session-card-top">
-        <div class="session-card-course">${s.course}</div>
-        <div class="session-card-date">${dateStr} · ${timeStr}</div>
+        <div class="session-card-course" style="cursor:pointer;" onclick="openCourseHistory('${s.course}')">${s.course}</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div class="session-card-date">${dateStr} · ${timeStr}</div>
+          <button class="btn btn-ghost btn-sm" onclick="deleteSession(${realIndex})" title="Delete session" style="padding:3px 6px;">
+            <i class="ti ti-trash" style="color:var(--red);font-size:13px;"></i>
+          </button>
+        </div>
       </div>
       <div class="session-card-meta">
         <span class="session-card-stat"><i class="ti ti-clipboard-list"></i>${s.questions} questions</span>
         <span class="session-card-stat"><i class="ti ti-mood-smile"></i>${modeLabel}</span>
       </div>
-      <div style="display:flex;flex-wrap:wrap;gap:4px;">${wsHtml}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">${wsHtml}</div>
     </div>`;
   }).join("");
+}
+
+// ── SESSION MANAGEMENT ─────────────────────────────────────────────────────
+function deleteSession(index) {
+  if (!confirm("Delete this session? This cannot be undone.")) return;
+  state.sessions.splice(index, 1);
+  saveLocal();
+  renderHistory();
+}
+
+function removeSessionWeakSpot(sessionIndex, weakSpotIndex) {
+  const session = state.sessions[sessionIndex];
+  if (!session || !session.weakSpots) return;
+  const topic = session.weakSpots[weakSpotIndex];
+  session.weakSpots.splice(weakSpotIndex, 1);
+
+  // Also decrement the global weak spot count
+  if (topic && state.allWeakSpots[session.course]?.[topic]) {
+    state.allWeakSpots[session.course][topic] = Math.max(0, state.allWeakSpots[session.course][topic] - 1);
+    if (state.allWeakSpots[session.course][topic] === 0) {
+      delete state.allWeakSpots[session.course][topic];
+    }
+  }
+
+  saveLocal();
+  renderHistory();
 }
 
 // ── WEAK SPOTS PAGE ────────────────────────────────────────────────────────
@@ -1845,6 +2088,234 @@ function openEditExam(id) {
   document.getElementById("examGrade").value = exam.grade || "";
   document.getElementById("gradeGroup").style.display = "block";
   document.getElementById("examModal").classList.add("open");
+}
+
+// ── CHAT HISTORY HELPERS ───────────────────────────────────────────────────
+function saveChatMessage(role, content) {
+  const course = state.selectedCourse;
+  if (!course) return;
+  if (!state.chatHistoryPerCourse[course]) state.chatHistoryPerCourse[course] = [];
+  state.chatHistoryPerCourse[course].push({ role, content, date: new Date().toISOString() });
+  saveLocal();
+
+  // Save to Supabase
+  fetch(`${API_BASE}/api/chat-history`, {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ user_id:USER_ID, course, role, content })
+  }).catch(()=>{});
+}
+
+function addSessionDivider(label) {
+  const area = document.getElementById("chatArea");
+  const div = document.createElement("div");
+  div.className = "session-divider";
+  div.textContent = label;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function showContinuePrompt() {
+  const area = document.getElementById("chatArea");
+
+  // Add divider for new session
+  const today = new Date().toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+  addSessionDivider(`New session · ${today}`);
+
+  const wrap = document.createElement("div");
+  wrap.className = "bubble-wrap ai";
+  const lbl = document.createElement("div");
+  lbl.className = "bubble-label";
+  lbl.textContent = "StudyBuddy";
+  const b = document.createElement("div");
+  b.className = "bubble ai";
+  b.innerHTML = `Welcome back! 🌿 Would you like to continue where you left off, or start a new session?
+    <div class="continue-prompt-btns" style="margin-top:10px;">
+      <button class="btn btn-primary btn-sm" onclick="continueSession()"><i class="ti ti-arrow-right"></i> Continue</button>
+      <button class="btn btn-sm" onclick="startFreshSession()"><i class="ti ti-refresh"></i> Start fresh</button>
+    </div>`;
+  wrap.appendChild(lbl);
+  wrap.appendChild(b);
+  area.appendChild(wrap);
+  area.scrollTop = area.scrollHeight;
+}
+
+function continueSession() {
+  // Remove the continue prompt bubble
+  document.querySelectorAll(".bubble-wrap.ai").forEach((w, i, arr) => {
+    if (i === arr.length - 1) w.remove();
+  });
+  addAIBubble("Picking up where we left off! What would you like to work on?");
+  saveChatMessage("ai", "Picking up where we left off! What would you like to work on?");
+  state.sessionSubMode = null;
+  setTimeout(() => askWhatToWorkOn(), 600);
+}
+
+function startFreshSession() {
+  // Remove the continue prompt bubble
+  document.querySelectorAll(".bubble-wrap.ai").forEach((w, i, arr) => {
+    if (i === arr.length - 1) w.remove();
+  });
+
+  // Add a visual divider
+  const today = new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
+  addSessionDivider(`Fresh start · ${today}`);
+
+  // Add divider to history
+  const course = state.selectedCourse;
+  if (!state.chatHistoryPerCourse[course]) state.chatHistoryPerCourse[course] = [];
+  state.chatHistoryPerCourse[course].push({ role:"divider", content:`Fresh start · ${today}`, date:new Date().toISOString() });
+
+  const greeting = `Hey Ashley! Starting fresh for **${course}** 🌿\n\nWhat would you like to work on today?`;
+  addAIBubble(greeting);
+  saveChatMessage("ai", greeting);
+  state.sessionSubMode = null;
+  setTimeout(() => askWhatToWorkOn(), 600);
+}
+
+async function clearCourseChat(course) {
+  if (!confirm(`Clear all chat history for ${course}? This cannot be undone.`)) return;
+  state.chatHistoryPerCourse[course] = [];
+  saveLocal();
+  fetch(`${API_BASE}/api/chat-history?user_id=${USER_ID}&course=${encodeURIComponent(course)}`, {
+    method:"DELETE"
+  }).catch(()=>{});
+  // If currently in that course's study screen, clear the chat area
+  if (state.selectedCourse === course) {
+    document.getElementById("chatArea").innerHTML = "";
+  }
+}
+
+async function loadChatHistoryFromSupabase(course) {
+  try {
+    const r = await fetch(`${API_BASE}/api/chat-history?user_id=${USER_ID}&course=${encodeURIComponent(course)}`);
+    const data = await r.json();
+    if (data && data.length > 0) {
+      state.chatHistoryPerCourse[course] = data.map(m => ({
+        role: m.role,
+        content: m.content,
+        date: m.created_at
+      }));
+      saveLocal();
+    }
+  } catch(e) {}
+}
+
+// ── CHAT HISTORY LIST + VIEWER ─────────────────────────────────────────────
+function renderChatHistoryList(course) {
+  const container = document.getElementById("chatHistoryList");
+  const viewer = document.getElementById("chatViewer");
+  if (!container) return;
+  viewer.style.display = "none";
+  container.style.display = "block";
+
+  const history = state.chatHistoryPerCourse[course] || [];
+  if (history.length === 0) {
+    container.innerHTML = `<div class="history-empty" style="padding:40px 20px;">
+      <i class="ti ti-messages" style="font-size:40px;color:var(--pg-200);display:block;margin-bottom:10px;"></i>
+      <p style="font-size:13px;">No chat history yet — start a study session to see conversations here!</p>
+    </div>`;
+    return;
+  }
+
+  // Group messages into sessions by dividers
+  const sessions = [];
+  let current = null;
+
+  history.forEach(msg => {
+    if (msg.role === "divider") {
+      if (current) sessions.push(current);
+      current = { label: msg.content, date: msg.date, messages: [] };
+    } else {
+      if (!current) {
+        const d = new Date(history[0].date);
+        const label = d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+        current = { label, date: history[0].date, messages: [] };
+      }
+      current.messages.push(msg);
+    }
+  });
+  if (current && current.messages.length > 0) sessions.push(current);
+
+  if (sessions.length === 0) {
+    container.innerHTML = `<p style="font-size:13px;color:var(--pg-muted);">No sessions found.</p>`;
+    return;
+  }
+
+  container.innerHTML = [...sessions].reverse().map((s, i) => {
+    const realIndex = sessions.length - 1 - i;
+    const msgCount = s.messages.length;
+    const preview = s.messages.find(m => m.role === "user")?.content || "No messages";
+    const previewText = preview.length > 60 ? preview.slice(0,60) + "..." : preview;
+    const d = new Date(s.date);
+    const dateStr = d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+    const timeStr = d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
+    return `<div class="session-card" onclick="openChatViewer(${realIndex}, '${course}')">
+      <div class="session-card-top">
+        <div class="session-card-course" style="font-size:12px;">${s.label}</div>
+        <div class="session-card-date">${dateStr} · ${timeStr}</div>
+      </div>
+      <div class="session-card-meta" style="margin-bottom:4px;">
+        <span class="session-card-stat"><i class="ti ti-messages"></i>${msgCount} messages</span>
+      </div>
+      <div style="font-size:12px;color:var(--pg-muted);line-height:1.4;">${previewText}</div>
+    </div>`;
+  }).join("");
+}
+
+function openChatViewer(sessionIndex, course) {
+  const history = state.chatHistoryPerCourse[course] || [];
+
+  // Rebuild sessions list same way as renderChatHistoryList
+  const sessions = [];
+  let current = null;
+  history.forEach(msg => {
+    if (msg.role === "divider") {
+      if (current) sessions.push(current);
+      current = { label: msg.content, date: msg.date, messages: [] };
+    } else {
+      if (!current) {
+        const d = new Date(history[0].date);
+        current = { label: d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}), date: history[0].date, messages: [] };
+      }
+      current.messages.push(msg);
+    }
+  });
+  if (current && current.messages.length > 0) sessions.push(current);
+
+  const session = sessions[sessionIndex];
+  if (!session) return;
+
+  document.getElementById("chatHistoryList").style.display = "none";
+  const viewer = document.getElementById("chatViewer");
+  viewer.style.display = "block";
+  document.getElementById("chatViewerTitle").textContent = session.label;
+
+  const messagesEl = document.getElementById("chatViewerMessages");
+  messagesEl.innerHTML = session.messages.map(m => {
+    const isUser = m.role === "user";
+    return `<div style="display:flex;flex-direction:column;gap:3px;align-items:${isUser ? "flex-end" : "flex-start"};">
+      <div style="font-size:10px;color:var(--pg-muted);padding:0 4px;">${isUser ? "You" : "StudyBuddy"}</div>
+      <div style="max-width:82%;padding:10px 13px;border-radius:14px;font-size:13px;line-height:1.6;
+        ${isUser
+          ? "background:var(--pg-400);color:white;border-bottom-right-radius:4px;"
+          : "background:white;border:1px solid var(--pg-border);border-bottom-left-radius:4px;box-shadow:var(--shadow);"
+        }">
+        ${m.content.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>")}
+      </div>
+    </div>`;
+  }).join("");
+
+  viewer.scrollTop = 0;
+}
+
+function closeChatViewer() {
+  document.getElementById("chatViewer").style.display = "none";
+  document.getElementById("chatHistoryList").style.display = "block";
+}
+
+function resumeFromViewer() {
+  closeChatViewer();
+  startStudyFromCourse();
 }
 
 // ── CALENDAR ───────────────────────────────────────────────────────────────

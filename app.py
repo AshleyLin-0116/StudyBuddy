@@ -312,5 +312,55 @@ def update_exam(exam_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# ── Chat history ───────────────────────────────────────────────────────────
+@app.route("/api/chat-history", methods=["GET"])
+def get_chat_history():
+    user_id = request.args.get("user_id", "default")
+    course  = request.args.get("course")
+    t = db("chat_history")
+    if not t:
+        return jsonify([])
+    try:
+        q = t.select("*").eq("user_id", user_id)
+        if course:
+            q = q.eq("course", course)
+        return jsonify(q.order("created_at", desc=False).execute().data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/chat-history", methods=["POST"])
+def save_chat_message():
+    data = request.json
+    t = db("chat_history")
+    if not t:
+        return jsonify({"status": "ok (no db)"})
+    try:
+        t.insert({
+            "user_id":    data.get("user_id", "default"),
+            "course":     data.get("course", ""),
+            "role":       data.get("role", "user"),
+            "content":    data.get("content", ""),
+            "created_at": datetime.utcnow().isoformat()
+        }).execute()
+        return jsonify({"status": "ok"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/chat-history", methods=["DELETE"])
+def clear_chat_history():
+    user_id = request.args.get("user_id", "default")
+    course  = request.args.get("course")
+    t = db("chat_history")
+    if not t:
+        return jsonify({"status": "ok (no db)"})
+    try:
+        q = t.delete().eq("user_id", user_id)
+        if course:
+            q = q.eq("course", course)
+        q.execute()
+        return jsonify({"status": "ok"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == "__main__":
     app.run(debug=True)
