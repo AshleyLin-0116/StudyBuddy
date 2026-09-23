@@ -1845,15 +1845,33 @@ async function saveExam() {
   closeExamModal();
 
   if (state.editingExamId) {
-    // Update existing
+    // Update existing locally
     const idx = state.exams.findIndex(e => String(e.id) === String(state.editingExamId));
     if (idx >= 0) {
-      state.exams[idx] = { ...state.exams[idx], course, exam_name:name, exam_date:date, exam_time:time, topics, grade };
+      state.exams[idx] = {
+        ...state.exams[idx],
+        course, exam_name:name, exam_date:date, exam_time:time, topics, grade
+      };
       saveLocal();
-      if (String(state.editingExamId).length > 13) {
+
+      // Sync to Supabase — PATCH if UUID, skip if local-only timestamp ID
+      const idStr = String(state.editingExamId);
+      if (idStr.length > 13) {
         fetch(`${API_BASE}/api/exams/${state.editingExamId}`, {
           method:"PATCH", headers:{"Content-Type":"application/json"},
           body: JSON.stringify({ course, exam_name:name, exam_date:date, exam_time:time, topics, grade })
+        }).catch(()=>{});
+      } else {
+        // Local-only exam (never saved to Supabase) — save it now as a new row
+        fetch(`${API_BASE}/api/exams`, {
+          method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ user_id:USER_ID, course, exam_name:name, exam_date:date, exam_time:time, topics, grade })
+        }).then(r => r.json()).then(d => {
+          if (d.inserted?.[0]?.id) {
+            // Update local ID to the real UUID so future edits/deletes work
+            state.exams[idx].id = d.inserted[0].id;
+            saveLocal();
+          }
         }).catch(()=>{});
       }
     }
@@ -1967,6 +1985,23 @@ function removeSessionWeakSpot(sessionIndex, weakSpotIndex) {
   renderHistory();
 }
 
+function deleteWeakSpot(course, topic) {
+  if (!state.allWeakSpots[course]) return;
+  delete state.allWeakSpots[course][topic];
+  if (Object.keys(state.allWeakSpots[course]).length === 0) {
+    delete state.allWeakSpots[course];
+  }
+  saveLocal();
+  renderWeakSpots();
+  // Also remove from any session records
+  state.sessions.forEach(s => {
+    if (s.course === course && s.weakSpots) {
+      s.weakSpots = s.weakSpots.filter(w => w !== topic);
+    }
+  });
+  saveLocal();
+}
+
 // ── WEAK SPOTS PAGE ────────────────────────────────────────────────────────
 function renderWeakSpots() {
   const body = document.getElementById("weakspotsBody");
@@ -1986,9 +2021,12 @@ function renderWeakSpots() {
         const cls = pct > 70 ? "high" : pct > 40 ? "" : "low";
         return `<div class="ws-item">
           <div class="ws-topic">${topic}</div>
-          <div class="ws-count">
+          <div class="ws-count" style="display:flex;align-items:center;gap:8px;">
             <div class="ws-bar-wrap"><div class="ws-bar ${cls}" style="width:${pct}%"></div></div>
             <div class="ws-num">${count}×</div>
+            <button class="btn btn-ghost btn-sm" onclick="deleteWeakSpot('${course}','${topic}')" title="Delete" style="padding:2px 5px;flex-shrink:0;">
+              <i class="ti ti-x" style="font-size:12px;color:var(--pg-muted);"></i>
+            </button>
           </div>
         </div>`;
       }).join("")}
@@ -2046,10 +2084,15 @@ function toggleSetting(key, btn) {
 }
 
 function removeExam(id) {
-  state.exams = state.exams.filter(e => e.id !== id);
+  state.exams = state.exams.filter(e => String(e.id) !== String(id));
   saveLocal();
   renderSettings();
   renderStudyPlan();
+
+  // Also delete from Supabase if it has a UUID
+  if (String(id).length > 13) {
+    fetch(`${API_BASE}/api/exams/${id}`, { method:"DELETE" }).catch(()=>{});
+  }
 }
 
 function confirmReset() { document.getElementById("resetModal").classList.add("open"); }

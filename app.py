@@ -312,6 +312,17 @@ def update_exam(exam_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route("/api/exams/<exam_id>", methods=["DELETE"])
+def delete_exam_schedule(exam_id):
+    t = db("exams")
+    if not t:
+        return jsonify({"status": "ok (no db)"})
+    try:
+        t.delete().eq("id", exam_id).execute()
+        return jsonify({"status": "ok"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # ── Chat history ───────────────────────────────────────────────────────────
 @app.route("/api/chat-history", methods=["GET"])
 def get_chat_history():
